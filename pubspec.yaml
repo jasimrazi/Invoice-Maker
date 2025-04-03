@@ -1,0 +1,32 @@
+name: invoice_maker
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.2.2
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  double_tap_to_exit: ^1.0.2
+  flutter:
+    sdk: flutter
+  provider: ^6.1.4
+  sqflite: ^2.2.0
+  path: ^1.8.3
+  intl: ^0.20.2
+  syncfusion_flutter_pdf: ^29.1.35
+  open_filex: ^4.7.0
+  path_provider: ^2.1.5
+  share_plus: ^10.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/fonts/Roboto-Regular.ttf
+    - assets/fonts/NotoSans-Regular.ttf
+    - assets/fonts/DejaVuSans.ttf
