@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:invoice_maker/utils/amount_in_words.dart';
 import 'package:invoice_maker/utils/default_values.dart';
-import 'package:invoice_maker/utils/truncate_with_ellpises.dart';
+import 'package:invoice_maker/utils/first_word.dart';
+// import 'package:invoice_maker/utils/truncate_with_ellpises.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -34,10 +35,12 @@ class InvoiceGenerator {
       final PdfFont notoSansFont = PdfTrueTypeFont(fontBytes, 12);
       final PdfFont notoSansBold = PdfTrueTypeFont(
         fontBytes,
-        18,
+        22,
         style: PdfFontStyle.bold,
       );
       final PdfFont notoSansSmall = PdfTrueTypeFont(fontBytes, 10);
+
+      final PdfFont reducedTaxFont = PdfTrueTypeFont(fontBytes, 8);
 
       final PdfDocument document = PdfDocument();
       PdfPage page = document.pages.add();
@@ -48,7 +51,7 @@ class InvoiceGenerator {
       graphics.drawString(
         "Fathima Jewellery Works",
         notoSansBold,
-        bounds: Rect.fromLTWH(0, 10, pageSize.width, 30),
+        bounds: Rect.fromLTWH(0, 5, pageSize.width, 30),
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
       );
       graphics.drawString(
@@ -58,7 +61,7 @@ class InvoiceGenerator {
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
       );
       graphics.drawString(
-        "GSTIN: 32CSRPP9658N1ZK",
+        "Mob:9605 700 100                    GSTIN: 32CSRPP9658N1ZK",
         notoSansSmall,
         bounds: Rect.fromLTWH(0, 60, pageSize.width, 20),
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
@@ -85,47 +88,47 @@ class InvoiceGenerator {
       // Recipient Details
       graphics.drawString(
         "Details of the Recipient:",
-        PdfTrueTypeFont(fontBytes, 14, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 9, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(0, 140, pageSize.width, 20),
       );
       graphics.drawString(
         "Name: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 10),
         bounds: Rect.fromLTWH(0, 160, pageSize.width, 20),
       );
       graphics.drawString(
         recipientName,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 10, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(50, 160, pageSize.width, 20),
       );
       graphics.drawString(
         "Address: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 10),
         bounds: Rect.fromLTWH(0, 180, pageSize.width, 20),
       );
       graphics.drawString(
         recipientAddress,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 10, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(50, 180, pageSize.width, 20),
       );
       graphics.drawString(
         "Place: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 10),
         bounds: Rect.fromLTWH(0, 200, pageSize.width, 20),
       );
       graphics.drawString(
         recipientPlace,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 10, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(50, 200, pageSize.width, 20),
       );
       graphics.drawString(
         "GSTIN: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 10),
         bounds: Rect.fromLTWH(0, 220, pageSize.width, 20),
       );
       graphics.drawString(
         gstin,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 10, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(50, 220, pageSize.width, 20),
       );
 
@@ -145,11 +148,11 @@ class InvoiceGenerator {
       grid.columns[0].width = tableWidth * 0.05; // Sl No.
       grid.columns[1].width = tableWidth * 0.14; // Description
       grid.columns[2].width = tableWidth * 0.12; // HSN Code
-      grid.columns[3].width = tableWidth * 0.12; // Unit of Measure
+      grid.columns[3].width = tableWidth * 0.10; // Unit of Measure
       grid.columns[4].width = tableWidth * 0.11; // Gross Weight
       grid.columns[5].width = tableWidth * 0.10; // Stone Weight
       grid.columns[6].width = tableWidth * 0.11; // Net Weight
-      grid.columns[7].width = tableWidth * 0.08; // Rate per Gram
+      grid.columns[7].width = tableWidth * 0.10; // Rate per Gram
       grid.columns[8].width = tableWidth * 0.10; // Stone Charge
       grid.columns[9].width = tableWidth * 0.12; // Taxable Value
 
@@ -172,7 +175,7 @@ class InvoiceGenerator {
       for (int i = 0; i < headers.length; i++) {
         header.cells[i].value = headers[i];
         header.cells[i].style = PdfGridCellStyle(
-          font: PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+          font: PdfTrueTypeFont(fontBytes, 8, style: PdfFontStyle.bold),
           format: PdfStringFormat(alignment: PdfTextAlignment.center),
           cellPadding: PdfPaddings(left: 0, right: 0, top: 5, bottom: 5),
         );
@@ -194,12 +197,12 @@ class InvoiceGenerator {
 
         // Truncate description with ellipsis if it exceeds column width
         String description = products[i]["description"] ?? "N/A";
-        description = truncateTextWithEllipsis(
-          text: description,
-          font: notoSansFont,
-          maxWidth:
-              grid.columns[1].width - 4, // Subtract padding (left: 2, right: 2)
-        );
+        // description = truncateTextWithEllipsis(
+        //   text: description,
+        //   font: notoSansFont,
+        //   maxWidth:
+        //       grid.columns[1].width - 4, // Subtract padding (left: 2, right: 2)
+        // );
 
         List<dynamic> productValues = [
           (i + 1).toString(),
@@ -218,11 +221,12 @@ class InvoiceGenerator {
         for (int j = 0; j < productValues.length; j++) {
           row.cells[j].value = productValues[j];
           row.cells[j].style = PdfGridCellStyle(
-            font: notoSansFont,
+            font: reducedTaxFont,
             format: PdfStringFormat(
               alignment:
                   j == 1 ? PdfTextAlignment.left : PdfTextAlignment.center,
-              wordWrap: j == 1 ? PdfWordWrapType.none : PdfWordWrapType.word,
+              wordWrap:
+                  j == 1 ? PdfWordWrapType.character : PdfWordWrapType.word,
             ),
             cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
           );
@@ -244,7 +248,7 @@ class InvoiceGenerator {
       final PdfGridRow totalRow = grid.rows.add();
       totalRow.cells[0].value = "Total";
       totalRow.cells[0].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.left),
         cellPadding: PdfPaddings(left: 4, right: 2, top: 2, bottom: 2),
       );
@@ -253,42 +257,42 @@ class InvoiceGenerator {
 
       totalRow.cells[4].value = totalGrossWeight.toStringAsFixed(2);
       totalRow.cells[4].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
       totalRow.cells[5].value = totalStoneWeight.toStringAsFixed(2);
       totalRow.cells[5].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
       totalRow.cells[6].value = totalNetWeight.toStringAsFixed(2);
       totalRow.cells[6].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
       totalRow.cells[7].value = ""; // Rate per Gram (no total needed)
       totalRow.cells[7].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
       totalRow.cells[8].value = ""; // Stone Charge (no total needed)
       totalRow.cells[8].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
       totalRow.cells[9].value = totalBeforeTax.toStringAsFixed(2);
       totalRow.cells[9].style = PdfGridCellStyle(
-        font: notoSansFont,
+        font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
@@ -301,27 +305,27 @@ class InvoiceGenerator {
       int totalAfterTaxFixed = totalAfterTax.toInt();
 
       // Use helper function to convert totalAfterTax to words
-      String amountInWords = convertAmountToWords(totalAfterTax);
+      // String amountInWords = convertAmountToWords(totalAfterTax);
 
-      // Add a row for Amount in Words
-      final PdfGridRow amountInWordsRow = grid.rows.add();
-      amountInWordsRow.cells[0].value = "Amount in Words:";
-      amountInWordsRow.cells[0].columnSpan = 2; // Merge first two columns
-      amountInWordsRow.cells[0].style = PdfGridCellStyle(
-        font: notoSansFont,
-        format: PdfStringFormat(alignment: PdfTextAlignment.left),
-        cellPadding: PdfPaddings(left: 4, right: 2, top: 2, bottom: 2),
-      );
-      amountInWordsRow.cells[2].value = amountInWords;
-      amountInWordsRow.cells[2].columnSpan = 8; // Merge remaining eight columns
-      amountInWordsRow.cells[2].style = PdfGridCellStyle(
-        font: notoSansFont,
-        format: PdfStringFormat(
-          alignment: PdfTextAlignment.left,
-          wordWrap: PdfWordWrapType.word, // Enable word wrapping
-        ),
-        cellPadding: PdfPaddings(left: 4, right: 2, top: 2, bottom: 2),
-      );
+      // // Add a row for Amount in Words
+      // final PdfGridRow amountInWordsRow = grid.rows.add();
+      // amountInWordsRow.cells[0].value = "Amount in Words:";
+      // amountInWordsRow.cells[0].columnSpan = 2; // Merge first two columns
+      // amountInWordsRow.cells[0].style = PdfGridCellStyle(
+      //   font: notoSansFont,
+      //   format: PdfStringFormat(alignment: PdfTextAlignment.left),
+      //   cellPadding: PdfPaddings(left: 4, right: 2, top: 2, bottom: 2),
+      // );
+      // amountInWordsRow.cells[2].value = amountInWords;
+      // amountInWordsRow.cells[2].columnSpan = 8; // Merge remaining eight columns
+      // amountInWordsRow.cells[2].style = PdfGridCellStyle(
+      //   font: notoSansFont,
+      //   format: PdfStringFormat(
+      //     alignment: PdfTextAlignment.left,
+      //     wordWrap: PdfWordWrapType.word, // Enable word wrapping
+      //   ),
+      //   cellPadding: PdfPaddings(left: 4, right: 2, top: 2, bottom: 2),
+      // );
 
       // Draw the product table (now including Total and Amount in Words)
       PdfLayoutResult gridResult =
@@ -350,18 +354,18 @@ class InvoiceGenerator {
       // Draw Bank Details section
       graphics.drawString(
         "Bank Details:",
-        PdfTrueTypeFont(fontBytes, 14, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 10, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(0, bankDetailsStartY, bankDetailsWidth, 20),
       );
 
       graphics.drawString(
         "Bank Name: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 8),
         bounds: Rect.fromLTWH(0, bankDetailsStartY + 20, labelWidth, 20),
       );
       graphics.drawString(
         DefaultValues.bankName,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 8, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(
           valueStartX,
           bankDetailsStartY + 20,
@@ -373,12 +377,12 @@ class InvoiceGenerator {
 
       graphics.drawString(
         "Account Name: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 8),
         bounds: Rect.fromLTWH(0, bankDetailsStartY + 40, labelWidth, 20),
       );
       graphics.drawString(
         DefaultValues.accountName,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 8, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(
           valueStartX,
           bankDetailsStartY + 40,
@@ -390,12 +394,12 @@ class InvoiceGenerator {
 
       graphics.drawString(
         "Account No: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 8),
         bounds: Rect.fromLTWH(0, bankDetailsStartY + 60, labelWidth, 20),
       );
       graphics.drawString(
         DefaultValues.accountNo,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 8, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(
           valueStartX,
           bankDetailsStartY + 60,
@@ -407,12 +411,12 @@ class InvoiceGenerator {
 
       graphics.drawString(
         "IFSC Code: ",
-        PdfTrueTypeFont(fontBytes, 12),
+        PdfTrueTypeFont(fontBytes, 8),
         bounds: Rect.fromLTWH(0, bankDetailsStartY + 80, labelWidth, 20),
       );
       graphics.drawString(
         DefaultValues.ifscCode,
-        PdfTrueTypeFont(fontBytes, 12, style: PdfFontStyle.bold),
+        PdfTrueTypeFont(fontBytes, 8, style: PdfFontStyle.bold),
         bounds: Rect.fromLTWH(
           valueStartX,
           bankDetailsStartY + 80,
@@ -465,7 +469,7 @@ class InvoiceGenerator {
         }
         row.cells[1].value = formattedValue;
         row.cells[0].style = PdfGridCellStyle(
-          font: notoSansFont,
+          font: reducedTaxFont,
           format: PdfStringFormat(alignment: PdfTextAlignment.left),
           cellPadding: PdfPaddings(left: 3, right: 0, top: 3, bottom: 3),
           borders: PdfBorders(
@@ -476,7 +480,7 @@ class InvoiceGenerator {
           ),
         );
         row.cells[1].style = PdfGridCellStyle(
-          font: notoSansFont,
+          font: reducedTaxFont,
           format: PdfStringFormat(alignment: PdfTextAlignment.right),
           cellPadding: PdfPaddings(left: 0, right: 3, top: 3, bottom: 3),
           borders: PdfBorders(
@@ -486,6 +490,15 @@ class InvoiceGenerator {
             bottom: PdfPen(PdfColor(0, 0, 0, 0), width: 0),
           ),
         );
+
+        // Bold the value for "Total Amount Including Tax:"
+        if (item["label"] == "Total Amount Including Tax: ") {
+          row.cells[1].style.font = PdfTrueTypeFont(
+            fontBytes,
+            8,
+            style: PdfFontStyle.bold,
+          );
+        }
       }
 
       taxGrid.draw(
@@ -506,8 +519,10 @@ class InvoiceGenerator {
       //   format: PdfStringFormat(alignment: PdfTextAlignment.right),
       // );
 
+      String firstName = getFirstWord(recipientName);
+
       final Directory directory = await getApplicationDocumentsDirectory();
-      final String filePath = "${directory.path}/invoice_$invoiceId.pdf";
+      final String filePath = "${directory.path}/${firstName}_${invoiceId}.pdf";
       final File file = File(filePath);
       await file.writeAsBytes(await document.save());
 

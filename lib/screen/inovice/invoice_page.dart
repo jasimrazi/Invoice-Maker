@@ -78,7 +78,7 @@ class _InvoicePageState extends State<InvoicePage> {
                         context: context,
                         initialDate: DateTime.now(),
                         firstDate: DateTime(2000),
-                        lastDate: DateTime.now(),
+                        lastDate: DateTime(2100),
                       );
                       if (selectedDate != null) {
                         dateController.text = DateFormat(
