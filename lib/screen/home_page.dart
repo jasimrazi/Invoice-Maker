@@ -132,6 +132,27 @@ class _HomePageState extends State<HomePage> {
                                 label: const Text("Print"),
                               ),
 
+                              // Edit Button
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              InvoicePage(invoice: invoice),
+                                    ),
+                                  ).then((_) {
+                                    Provider.of<InvoiceProvider>(
+                                      context,
+                                      listen: false,
+                                    ).fetchInvoices();
+                                  });
+                                },
+                                icon: const Icon(Icons.edit),
+                                label: const Text("Edit"),
+                              ),
+
                               // Share Button
                               ElevatedButton.icon(
                                 onPressed: () async {

@@ -104,6 +104,34 @@ class InvoiceProvider extends ChangeNotifier {
     }
   }
 
+  void replaceProduct(
+    Product oldProduct, {
+    required String description,
+    required String hsnCode,
+    required String unitOfMeasure,
+    required double grossWeight,
+    double? stoneWeight,
+    required double ratePerGram,
+    double? stoneCharge,
+  }) {
+    final index = addedProducts.indexOf(oldProduct);
+    if (index == -1) return;
+    final netWeight = grossWeight - (stoneWeight ?? 0);
+    final taxableValue = (netWeight * ratePerGram) + (stoneCharge ?? 0);
+    addedProducts[index] = oldProduct.copyWith(
+      description: description,
+      hsnCode: hsnCode,
+      unitOfMeasure: unitOfMeasure,
+      grossWeight: grossWeight,
+      stoneWeight: stoneWeight ?? 0.0,
+      netWeight: netWeight,
+      ratePerGram: ratePerGram,
+      stoneCharge: stoneCharge ?? 0.0,
+      taxableValue: taxableValue,
+    );
+    notifyListeners();
+  }
+
   void clearProductList() {
     addedProducts.clear(); // Clear the temporary list
     notifyListeners(); // Notify listeners to update the UI
@@ -133,6 +161,57 @@ class InvoiceProvider extends ChangeNotifier {
     final totalBeforeTax = calculateTotalAmountBeforeTax();
     final totalTax = calculateTotalTax(gstPercentage);
     return totalBeforeTax + totalTax;
+  }
+
+  Future<void> loadInvoiceForEditing(Invoice invoice) async {
+    final products = await _productDB.getProductsByInvoiceId(
+      invoice.invoiceId!,
+    );
+    addedProducts = List<Product>.from(products);
+    selectedRecipient = invoice.recipient;
+    notifyListeners();
+  }
+
+  Future<void> updateInvoice({
+    required int invoiceId,
+    required DateTime date,
+    required Recipient recipient,
+    required double totalAmount,
+    required double gst,
+    required double totalTaxableAmount,
+    required List<Product> products,
+  }) async {
+    try {
+      final int recipientId =
+          recipient.id ?? await _recipientDB.insertRecipient(recipient);
+
+      final invoice = Invoice(
+        invoiceId: invoiceId,
+        recipient: recipient.copyWith(id: recipientId),
+        products: products,
+        date: date,
+        totalAmount: totalAmount,
+        gst: gst,
+        totalTaxableAmount: totalTaxableAmount,
+      );
+
+      await _invoiceDB.updateInvoice(invoice, recipientId);
+      await _productDB.deleteProductsByInvoiceId(invoiceId);
+
+      for (final product in products) {
+        await _productDB.insertProduct(
+          product.copyWith(invoiceId: invoiceId),
+          invoiceId,
+        );
+      }
+
+      addedProducts.clear();
+      selectedRecipient = null;
+      await fetchInvoices();
+    } catch (e) {
+      print('Error updating invoice: $e');
+      throw Exception('Failed to update invoice: $e');
+    }
   }
 
   Future<Invoice> addInvoice({
@@ -216,8 +295,6 @@ class InvoiceProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-
 
   Future<void> generateInvoicePDF({
     required Invoice invoice,

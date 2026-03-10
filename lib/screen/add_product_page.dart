@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoice_maker/model/product.dart';
 import 'package:invoice_maker/provider/invoice_provider.dart';
 import 'package:invoice_maker/screen/widget/appbar.dart';
 import 'package:invoice_maker/screen/widget/bottomnavbar.dart';
@@ -7,7 +8,8 @@ import 'package:invoice_maker/utils/default_values.dart';
 import 'package:provider/provider.dart';
 
 class AddProductPage extends StatefulWidget {
-  const AddProductPage({super.key});
+  final Product? product;
+  const AddProductPage({super.key, this.product});
 
   @override
   State<AddProductPage> createState() => _AddProductPageState();
@@ -27,13 +29,31 @@ class _AddProductPageState extends State<AddProductPage> {
 
   final _formKey = GlobalKey<FormState>();
 
+  bool get _isEditMode => widget.product != null;
+
   @override
   void initState() {
     super.initState();
-    // Prefill the default values
-    descriptionController.text = DefaultValues.descriptionOfGoods;
-    hsnCodeController.text = DefaultValues.hsnCode;
-    unitOfMeasureController.text = DefaultValues.unitOfMeasure;
+    if (_isEditMode) {
+      final p = widget.product!;
+      descriptionController.text = p.description;
+      hsnCodeController.text = p.hsnCode;
+      unitOfMeasureController.text = p.unitOfMeasure;
+      grossWeightController.text = p.grossWeight.toString();
+      stoneWeightController.text =
+          (p.stoneWeight != null && p.stoneWeight! > 0)
+              ? p.stoneWeight.toString()
+              : '';
+      ratePerGramController.text = p.ratePerGram.toString();
+      stoneChargeController.text =
+          (p.stoneCharge != null && p.stoneCharge! > 0)
+              ? p.stoneCharge.toString()
+              : '';
+    } else {
+      descriptionController.text = DefaultValues.descriptionOfGoods;
+      hsnCodeController.text = DefaultValues.hsnCode;
+      unitOfMeasureController.text = DefaultValues.unitOfMeasure;
+    }
   }
 
   @override
@@ -60,7 +80,9 @@ class _AddProductPageState extends State<AddProductPage> {
         FocusScope.of(context).unfocus(); // Dismiss the keyboard
       },
       child: Scaffold(
-        appBar: CustomAppBar(title: 'Add Product'),
+        appBar: CustomAppBar(
+          title: _isEditMode ? 'Edit Product' : 'Add Product',
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -207,7 +229,7 @@ class _AddProductPageState extends State<AddProductPage> {
           ),
         ),
         bottomNavigationBar: CustomBottomNavBar(
-          label: "Add Product",
+          label: _isEditMode ? "Update Product" : "Add Product",
           onTap: () {
             if (_formKey.currentState!.validate()) {
               final invoiceProvider = Provider.of<InvoiceProvider>(
@@ -215,39 +237,58 @@ class _AddProductPageState extends State<AddProductPage> {
                 listen: false,
               );
 
-              // Call the addProduct function with the appropriate parameters
-              invoiceProvider.addProduct(
-                description: descriptionController.text,
-                hsnCode: hsnCodeController.text,
-                unitOfMeasure: unitOfMeasureController.text,
-                grossWeight: double.parse(grossWeightController.text),
-                stoneWeight:
-                    stoneWeightController.text.isNotEmpty
-                        ? double.parse(stoneWeightController.text)
-                        : null, // Nullable
-                ratePerGram: double.parse(ratePerGramController.text),
-                stoneCharge:
-                    stoneChargeController.text.isNotEmpty
-                        ? double.parse(stoneChargeController.text)
-                        : null, // Nullable
-              );
+              if (_isEditMode) {
+                invoiceProvider.replaceProduct(
+                  widget.product!,
+                  description: descriptionController.text,
+                  hsnCode: hsnCodeController.text,
+                  unitOfMeasure: unitOfMeasureController.text,
+                  grossWeight: double.parse(grossWeightController.text),
+                  stoneWeight:
+                      stoneWeightController.text.isNotEmpty
+                          ? double.parse(stoneWeightController.text)
+                          : null,
+                  ratePerGram: double.parse(ratePerGramController.text),
+                  stoneCharge:
+                      stoneChargeController.text.isNotEmpty
+                          ? double.parse(stoneChargeController.text)
+                          : null,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Product updated successfully!'),
+                  ),
+                );
+                Navigator.pop(context);
+              } else {
+                invoiceProvider.addProduct(
+                  description: descriptionController.text,
+                  hsnCode: hsnCodeController.text,
+                  unitOfMeasure: unitOfMeasureController.text,
+                  grossWeight: double.parse(grossWeightController.text),
+                  stoneWeight:
+                      stoneWeightController.text.isNotEmpty
+                          ? double.parse(stoneWeightController.text)
+                          : null,
+                  ratePerGram: double.parse(ratePerGramController.text),
+                  stoneCharge:
+                      stoneChargeController.text.isNotEmpty
+                          ? double.parse(stoneChargeController.text)
+                          : null,
+                );
 
-              // Clear the form or navigate back
-              print('Product successfully added!');
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Product added successfully!')),
-              );
+                print('Product successfully added!');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Product added successfully!')),
+                );
 
-              // Optionally, clear the text fields after adding the product
-              // descriptionController.clear();
-              // hsnCodeController.clear();
-              // unitOfMeasureController.clear();
-              grossWeightController.clear();
-              stoneWeightController.clear();
-              netWeightController.clear();
-              ratePerGramController.clear();
-              stoneChargeController.clear();
-              taxableValueController.clear();
+                grossWeightController.clear();
+                stoneWeightController.clear();
+                netWeightController.clear();
+                ratePerGramController.clear();
+                stoneChargeController.clear();
+                taxableValueController.clear();
+              }
             }
           },
         ),

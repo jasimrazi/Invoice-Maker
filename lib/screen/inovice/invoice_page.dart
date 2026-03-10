@@ -12,7 +12,8 @@ import 'package:invoice_maker/screen/widget/textfield.dart';
 import 'package:provider/provider.dart';
 
 class InvoicePage extends StatefulWidget {
-  const InvoicePage({super.key});
+  final Invoice? invoice;
+  const InvoicePage({super.key, this.invoice});
 
   @override
   State<InvoicePage> createState() => _InvoicePageState();
@@ -22,11 +23,26 @@ class _InvoicePageState extends State<InvoicePage> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController gstController = TextEditingController();
 
+  bool get _isEditMode => widget.invoice != null;
+
   @override
   void initState() {
     super.initState();
-    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    gstController.text = '2.50';
+    if (_isEditMode) {
+      dateController.text = DateFormat(
+        'yyyy-MM-dd',
+      ).format(widget.invoice!.date);
+      gstController.text = widget.invoice!.gst.toStringAsFixed(2);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<InvoiceProvider>(
+          context,
+          listen: false,
+        ).loadInvoiceForEditing(widget.invoice!);
+      });
+    } else {
+      dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      gstController.text = '2.50';
+    }
   }
 
   @override
@@ -45,7 +61,9 @@ class _InvoicePageState extends State<InvoicePage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: CustomAppBar(title: 'Invoice Page'),
+        appBar: CustomAppBar(
+          title: _isEditMode ? 'Edit Invoice' : 'Invoice Page',
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -57,7 +75,7 @@ class _InvoicePageState extends State<InvoicePage> {
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8.0),
-              const SearchRecipient(),
+              SearchRecipient(skipInitialClear: _isEditMode),
               const SizedBox(height: 16.0),
               const Text(
                 'Date',
@@ -137,7 +155,14 @@ class _InvoicePageState extends State<InvoicePage> {
                         return ProductTile(
                           product: product,
                           onTap: () {
-                            print('Product tapped: ${product.description}');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        AddProductPage(product: product),
+                              ),
+                            );
                           },
                           onDelete: () {
                             provider.removeProduct(product);
@@ -204,7 +229,7 @@ class _InvoicePageState extends State<InvoicePage> {
                 : const SizedBox(),
         bottomNavigationBar: CustomBottomNavBar(
           isLoading: invoiceProvider.isPDFloading,
-          label: "Make Invoice",
+          label: _isEditMode ? "Update Invoice" : "Make Invoice",
           onTap: () async {
             try {
               final invoiceProvider = Provider.of<InvoiceProvider>(
@@ -237,60 +262,94 @@ class _InvoicePageState extends State<InvoicePage> {
               final totalTaxableAmount =
                   invoiceProvider.calculateTotalAmountBeforeTax();
 
-              print("Products before creating invoice: $products");
+              if (_isEditMode) {
+                await invoiceProvider.updateInvoice(
+                  invoiceId: widget.invoice!.invoiceId!,
+                  date: date,
+                  recipient: recipient,
+                  products: products,
+                  totalAmount: totalAmount,
+                  gst: gst,
+                  totalTaxableAmount: totalTaxableAmount,
+                );
 
-              final invoice = Invoice(
-                invoiceId: 0,
-                recipient: recipient,
-                products: products,
-                date: date,
-                totalAmount: totalAmount,
-                gst: gst,
-                totalTaxableAmount: totalTaxableAmount,
-              );
+                final updatedInvoice = widget.invoice!.copyWith(
+                  date: date,
+                  recipient: recipient,
+                  products: products,
+                  totalAmount: totalAmount,
+                  gst: gst,
+                  totalTaxableAmount: totalTaxableAmount,
+                );
 
-              print("Invoice created: ${invoice.products}");
+                await invoiceProvider.generateInvoicePDF(
+                  invoice: updatedInvoice,
+                  context: context,
+                );
 
-              final updatedInvoice = await invoiceProvider.addInvoice(
-                date: date,
-                recipient: recipient,
-                products: products,
-                totalAmount: totalAmount,
-                gst: gst,
-                totalTaxableAmount: totalTaxableAmount,
-              );
-
-              print("Products after addInvoice: ${updatedInvoice.products}");
-
-              print("Before PDF Generation: ${updatedInvoice.products}");
-              await invoiceProvider.generateInvoicePDF(
-                invoice: updatedInvoice,
-                context: context,
-              );
-              print("After PDF Generation: ${updatedInvoice.products}");
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Invoice created and PDF generated successfully!',
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Invoice updated successfully!'),
                   ),
-                ),
-              );
+                );
 
-              print(
-                "Before Clearing Product List: ${invoiceProvider.addedProducts}",
-              );
+                Navigator.pop(context);
+              } else {
+                print("Products before creating invoice: $products");
 
-              invoiceProvider.clearProductList();
-              invoiceProvider.selectedRecipient = null;
-              dateController.text = DateFormat(
-                'yyyy-MM-dd',
-              ).format(DateTime.now());
-              gstController.text = '2.50';
+                final invoice = Invoice(
+                  invoiceId: 0,
+                  recipient: recipient,
+                  products: products,
+                  date: date,
+                  totalAmount: totalAmount,
+                  gst: gst,
+                  totalTaxableAmount: totalTaxableAmount,
+                );
 
-              print(
-                "After Clearing Product List: ${invoiceProvider.addedProducts}",
-              );
+                print("Invoice created: ${invoice.products}");
+
+                final updatedInvoice = await invoiceProvider.addInvoice(
+                  date: date,
+                  recipient: recipient,
+                  products: products,
+                  totalAmount: totalAmount,
+                  gst: gst,
+                  totalTaxableAmount: totalTaxableAmount,
+                );
+
+                print("Products after addInvoice: ${updatedInvoice.products}");
+
+                print("Before PDF Generation: ${updatedInvoice.products}");
+                await invoiceProvider.generateInvoicePDF(
+                  invoice: updatedInvoice,
+                  context: context,
+                );
+                print("After PDF Generation: ${updatedInvoice.products}");
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Invoice created and PDF generated successfully!',
+                    ),
+                  ),
+                );
+
+                print(
+                  "Before Clearing Product List: ${invoiceProvider.addedProducts}",
+                );
+
+                invoiceProvider.clearProductList();
+                invoiceProvider.selectedRecipient = null;
+                dateController.text = DateFormat(
+                  'yyyy-MM-dd',
+                ).format(DateTime.now());
+                gstController.text = '2.50';
+
+                print(
+                  "After Clearing Product List: ${invoiceProvider.addedProducts}",
+                );
+              }
             } catch (e) {
               print("Exception: ${e.toString()}");
               ScaffoldMessenger.of(

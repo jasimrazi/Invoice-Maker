@@ -7,7 +7,8 @@ import 'package:invoice_maker/utils/apptheme.dart';
 import 'package:provider/provider.dart';
 
 class SearchRecipient extends StatefulWidget {
-  const SearchRecipient({super.key});
+  final bool skipInitialClear;
+  const SearchRecipient({super.key, this.skipInitialClear = false});
 
   @override
   State<SearchRecipient> createState() => _SearchRecipientState();
@@ -20,11 +21,13 @@ class _SearchRecipientState extends State<SearchRecipient> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<InvoiceProvider>(context, listen: false).clearSearchField();
-      _searchController.clear();
-      _searchFocusNode.unfocus();
-    });
+    if (!widget.skipInitialClear) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<InvoiceProvider>(context, listen: false).clearSearchField();
+        _searchController.clear();
+        _searchFocusNode.unfocus();
+      });
+    }
   }
 
   @override

@@ -38,4 +38,13 @@ class ProductDB {
     );
     return maps.map((map) => Product.fromMap(map)).toList();
   }
+
+  Future<int> deleteProductsByInvoiceId(int invoiceId) async {
+    final db = await _dbHelper.database;
+    return await db.delete(
+      'products',
+      where: 'invoice_id = ?',
+      whereArgs: [invoiceId],
+    );
+  }
 }

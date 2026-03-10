@@ -20,4 +20,20 @@ class InvoiceDB {
     final List<Map<String, dynamic>> maps = await db.query('invoices');
     return maps.map((map) => Invoice.fromMap(map)).toList();
   }
+
+  Future<int> updateInvoice(Invoice invoice, int recipientId) async {
+    final db = await _dbHelper.database;
+    return await db.update(
+      'invoices',
+      {
+        'recipient_id': recipientId,
+        'date': invoice.date.toIso8601String(),
+        'total_amount': invoice.totalAmount,
+        'gst': invoice.gst,
+        'total_taxable_amount': invoice.totalTaxableAmount,
+      },
+      where: 'invoice_id = ?',
+      whereArgs: [invoice.invoiceId],
+    );
+  }
 }
