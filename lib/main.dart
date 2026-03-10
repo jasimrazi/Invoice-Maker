@@ -3,18 +3,20 @@ import 'package:invoice_maker/database/database_helper.dart';
 import 'package:invoice_maker/provider/invoice_provider.dart';
 import 'package:invoice_maker/provider/providers.dart';
 import 'package:invoice_maker/provider/recepient_provider.dart';
+import 'package:invoice_maker/provider/voucher_provider.dart';
 import 'package:invoice_maker/screen/home_page.dart';
 import 'package:invoice_maker/utils/apptheme.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper().database;
   runApp(
     MultiProvider(
-       providers: [
+      providers: [
         ChangeNotifierProvider(create: (_) => InvoiceProvider()),
         ChangeNotifierProvider(create: (_) => RecepientProvider()),
+        ChangeNotifierProvider(create: (_) => VoucherProvider()),
       ],
       child: const MainApp(),
     ),

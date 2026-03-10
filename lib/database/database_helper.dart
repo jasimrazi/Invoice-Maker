@@ -22,15 +22,16 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
       onOpen: (db) {
         print('Database opened'); // Debugging log
       },
     );
   }
 
-   Future<void> closeDatabase() async {
+  Future<void> closeDatabase() async {
     if (_database != null) {
       await _database!.close();
       _database = null; // Reset the database instance
@@ -76,6 +77,39 @@ CREATE TABLE products (
   stone_charge REAL NOT NULL,
   taxable_value REAL NOT NULL,
   FOREIGN KEY (invoice_id) REFERENCES invoices (invoice_id) ON DELETE CASCADE
+);
+    ''');
+
+    await _createVoucherTables(db);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createVoucherTables(db);
+    }
+  }
+
+  Future<void> _createVoucherTables(Database db) async {
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS vouchers (
+  voucher_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  gstin TEXT,
+  date TEXT NOT NULL,
+  total_issued_net_weight REAL NOT NULL
+);
+    ''');
+
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS voucher_items (
+  item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  voucher_id INTEGER NOT NULL,
+  item_name TEXT NOT NULL,
+  hsn_code TEXT NOT NULL,
+  issued_gross_weight REAL NOT NULL,
+  touch REAL NOT NULL,
+  issued_net_weight REAL NOT NULL,
+  FOREIGN KEY (voucher_id) REFERENCES vouchers (voucher_id) ON DELETE CASCADE
 );
     ''');
   }
