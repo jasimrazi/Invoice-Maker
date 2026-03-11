@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:invoice_maker/model/voucher_item.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/utils/apptheme.dart';
+import 'package:provider/provider.dart';
 
 class VoucherItemTile extends StatelessWidget {
   final VoucherItem item;
@@ -16,6 +18,10 @@ class VoucherItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final issuedGrossWtDp = settings.vchIssuedGrossWtDp;
+    final touchDp = settings.vchTouchDp;
+    final issuedNetWtDp = settings.vchIssuedNetWtDp;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.0),
@@ -64,7 +70,7 @@ class VoucherItemTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _infoText('HSN Code', item.hsnCode),
-                _infoText('Touch', item.touch.toStringAsFixed(3)),
+                _infoText('Touch', item.touch.toStringAsFixed(touchDp)),
               ],
             ),
             const SizedBox(height: 10.0),
@@ -75,11 +81,11 @@ class VoucherItemTile extends StatelessWidget {
               children: [
                 _infoText(
                   'Issued Gross Wt',
-                  '${item.issuedGrossWeight.toStringAsFixed(3)} g',
+                  '${item.issuedGrossWeight.toStringAsFixed(issuedGrossWtDp)} g',
                 ),
                 _infoText(
                   'Issued Net Wt',
-                  '${item.issuedNetWeight.toStringAsFixed(3)} g',
+                  '${item.issuedNetWeight.toStringAsFixed(issuedNetWtDp)} g',
                 ),
               ],
             ),
@@ -95,7 +101,7 @@ class VoucherItemTile extends StatelessWidget {
                   style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
                 ),
                 Text(
-                  '${item.issuedNetWeight.toStringAsFixed(3)} g',
+                  '${item.issuedNetWeight.toStringAsFixed(issuedNetWtDp)} g',
                   style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,

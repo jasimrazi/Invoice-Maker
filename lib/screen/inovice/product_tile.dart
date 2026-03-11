@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:invoice_maker/model/product.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/utils/apptheme.dart'; // Import the colors
+import 'package:provider/provider.dart';
 
 class ProductTile extends StatelessWidget {
   final Product product;
@@ -16,6 +18,13 @@ class ProductTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final grossWtDp = settings.invGrossWtDp;
+    final stoneWtDp = settings.invStoneWtDp;
+    final netWtDp = settings.invNetWtDp;
+    final rateDp = settings.invRateDp;
+    final stoneChargeDp = settings.invStoneChargeDp;
+    final taxableDp = settings.invTaxableDp;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.0),
@@ -73,16 +82,16 @@ class ProductTile extends StatelessWidget {
               children: [
                 _infoText(
                   'Gross Wt',
-                  '${product.grossWeight?.toStringAsFixed(2) ?? 'N/A'} g',
+                  '${product.grossWeight?.toStringAsFixed(grossWtDp) ?? 'N/A'} g',
                 ),
                 if (product.stoneWeight != null && product.stoneWeight! > 0)
                   _infoText(
                     'Stone Wt',
-                    '${product.stoneWeight?.toStringAsFixed(2) ?? 'N/A'} g',
+                    '${product.stoneWeight?.toStringAsFixed(stoneWtDp) ?? 'N/A'} g',
                   ),
                 _infoText(
                   'Net Wt',
-                  '${product.netWeight?.toStringAsFixed(2) ?? 'N/A'} g',
+                  '${product.netWeight?.toStringAsFixed(netWtDp) ?? 'N/A'} g',
                 ),
               ],
             ),
@@ -94,12 +103,12 @@ class ProductTile extends StatelessWidget {
               children: [
                 _infoText(
                   'Rate/Gram',
-                  '₹${product.ratePerGram?.toStringAsFixed(2) ?? 'N/A'}',
+                  '₹${product.ratePerGram?.toStringAsFixed(rateDp) ?? 'N/A'}',
                 ),
                 if (product.stoneCharge != null && product.stoneCharge! > 0)
                   _infoText(
                     'Stone Charge',
-                    '₹${product.stoneCharge?.toStringAsFixed(2) ?? 'N/A'}',
+                    '₹${product.stoneCharge?.toStringAsFixed(stoneChargeDp) ?? 'N/A'}',
                   ),
               ],
             ),
@@ -118,7 +127,7 @@ class ProductTile extends StatelessWidget {
                   style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
                 ),
                 Text(
-                  '₹${product.taxableValue.toStringAsFixed(2)}',
+                  '₹${product.taxableValue.toStringAsFixed(taxableDp)}',
                   style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,

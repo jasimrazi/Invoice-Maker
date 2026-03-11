@@ -25,6 +25,13 @@ class InvoiceGenerator {
     required double sgstPercentage,
     required BuildContext context,
     bool isShare = false,
+    int grossWtDp = 2,
+    int stoneWtDp = 2,
+    int netWtDp = 2,
+    int rateDp = 2,
+    int stoneChargeDp = 2,
+    int taxableDp = 2,
+    int amountsDp = 2,
   }) async {
     try {
       final ByteData fontData = await rootBundle.load(
@@ -193,7 +200,7 @@ class InvoiceGenerator {
               products[i]["taxable_value"]?.toString() ?? "0.0",
             ) ??
             0.0;
-        String formattedTaxableValue = taxableValue.toStringAsFixed(2);
+        String formattedTaxableValue = taxableValue.toStringAsFixed(taxableDp);
 
         // Truncate description with ellipsis if it exceeds column width
         String description = products[i]["description"] ?? "N/A";
@@ -209,11 +216,27 @@ class InvoiceGenerator {
           description,
           products[i]["hsn_code"] ?? "N/A",
           products[i]["unit_of_measure"] ?? "N/A",
-          products[i]["gross_weight"]?.toString() ?? "0.0",
-          products[i]["stone_weight"]?.toString() ?? "0.0",
-          products[i]["net_weight"]?.toString() ?? "0.0",
-          products[i]["rate_per_gram"]?.toString() ?? "0.0",
-          products[i]["stone_charge"]?.toString() ?? "0.0",
+          products[i]["gross_weight"] != null
+              ? (products[i]["gross_weight"] as double).toStringAsFixed(
+                grossWtDp,
+              )
+              : '0.0',
+          products[i]["stone_weight"] != null
+              ? (products[i]["stone_weight"] as double).toStringAsFixed(
+                stoneWtDp,
+              )
+              : '0.0',
+          products[i]["net_weight"] != null
+              ? (products[i]["net_weight"] as double).toStringAsFixed(netWtDp)
+              : '0.0',
+          products[i]["rate_per_gram"] != null
+              ? (products[i]["rate_per_gram"] as double).toStringAsFixed(rateDp)
+              : '0.0',
+          products[i]["stone_charge"] != null
+              ? (products[i]["stone_charge"] as double).toStringAsFixed(
+                stoneChargeDp,
+              )
+              : '0.0',
           formattedTaxableValue,
         ];
 
@@ -255,21 +278,21 @@ class InvoiceGenerator {
       totalRow.cells[0].columnSpan =
           4; // Span across Sl No., Description, HSN Code, Unit of Measure
 
-      totalRow.cells[4].value = totalGrossWeight.toStringAsFixed(2);
+      totalRow.cells[4].value = totalGrossWeight.toStringAsFixed(grossWtDp);
       totalRow.cells[4].style = PdfGridCellStyle(
         font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
-      totalRow.cells[5].value = totalStoneWeight.toStringAsFixed(2);
+      totalRow.cells[5].value = totalStoneWeight.toStringAsFixed(stoneWtDp);
       totalRow.cells[5].style = PdfGridCellStyle(
         font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
-      totalRow.cells[6].value = totalNetWeight.toStringAsFixed(2);
+      totalRow.cells[6].value = totalNetWeight.toStringAsFixed(netWtDp);
       totalRow.cells[6].style = PdfGridCellStyle(
         font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
@@ -290,7 +313,7 @@ class InvoiceGenerator {
         cellPadding: PdfPaddings(left: 2, right: 2, top: 2, bottom: 2),
       );
 
-      totalRow.cells[9].value = totalBeforeTax.toStringAsFixed(2);
+      totalRow.cells[9].value = totalBeforeTax.toStringAsFixed(taxableDp);
       totalRow.cells[9].style = PdfGridCellStyle(
         font: reducedTaxFont,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
@@ -459,7 +482,7 @@ class InvoiceGenerator {
         row.cells[0].value = item["label"];
         String formattedValue = '';
         if (item["value"] is double) {
-          formattedValue = "₹${item["value"].toStringAsFixed(2)}";
+          formattedValue = "₹${item["value"].toStringAsFixed(amountsDp)}";
         } else if (item["value"] is int) {
           formattedValue =
               "₹${item["value"].toString()}"; // Handle integer values

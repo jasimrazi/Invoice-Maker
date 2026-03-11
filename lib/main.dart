@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:invoice_maker/database/database_helper.dart';
 import 'package:invoice_maker/provider/invoice_provider.dart';
-import 'package:invoice_maker/provider/providers.dart';
 import 'package:invoice_maker/provider/recepient_provider.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/provider/voucher_provider.dart';
 import 'package:invoice_maker/screen/home_page.dart';
 import 'package:invoice_maker/utils/apptheme.dart';
@@ -17,6 +17,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => InvoiceProvider()),
         ChangeNotifierProvider(create: (_) => RecepientProvider()),
         ChangeNotifierProvider(create: (_) => VoucherProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: const MainApp(),
     ),

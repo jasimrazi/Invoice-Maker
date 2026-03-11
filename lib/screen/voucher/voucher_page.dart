@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:invoice_maker/model/voucher.dart';
 import 'package:invoice_maker/model/voucher_item.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/provider/voucher_provider.dart';
 import 'package:invoice_maker/screen/voucher/add_voucher_item_page.dart';
 import 'package:invoice_maker/screen/voucher/voucher_item_tile.dart';
@@ -183,7 +184,7 @@ class _VoucherPageState extends State<VoucherPage> {
                               ),
                             ),
                             Text(
-                              '${provider.totalIssuedNetWeight.toStringAsFixed(3)} g',
+                              '${provider.totalIssuedNetWeight.toStringAsFixed(Provider.of<SettingsProvider>(context, listen: false).vchIssuedNetWtDp)} g',
                               style: const TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,

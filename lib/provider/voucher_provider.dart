@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:invoice_maker/database/voucher_db.dart';
 import 'package:invoice_maker/model/voucher.dart';
 import 'package:invoice_maker/model/voucher_item.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/provider/voucher_generator.dart';
+import 'package:provider/provider.dart';
 
 class VoucherProvider extends ChangeNotifier {
   final VoucherDB _voucherDB = VoucherDB();
@@ -156,6 +158,10 @@ class VoucherProvider extends ChangeNotifier {
     bool isShare = false,
   }) async {
     isPDFLoading = true;
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final int issuedGrossWtDp = settings.vchIssuedGrossWtDp;
+    final int touchDp = settings.vchTouchDp;
+    final int issuedNetWtDp = settings.vchIssuedNetWtDp;
     notifyListeners();
     try {
       final List<VoucherItem> items = await _voucherDB.getVoucherItems(
@@ -168,6 +174,9 @@ class VoucherProvider extends ChangeNotifier {
         date: voucher.date,
         items: items,
         isShare: isShare,
+        issuedGrossWtDp: issuedGrossWtDp,
+        touchDp: touchDp,
+        issuedNetWtDp: issuedNetWtDp,
       );
     } catch (e) {
       throw Exception('Failed to generate voucher PDF: $e');

@@ -3,8 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:invoice_maker/provider/invoice_provider.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/provider/voucher_provider.dart';
 import 'package:invoice_maker/screen/inovice/invoice_page.dart';
+import 'package:invoice_maker/screen/settings_page.dart';
 import 'package:invoice_maker/screen/voucher/voucher_page.dart';
 import 'package:invoice_maker/screen/widget/bottomnavbar.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +45,17 @@ class _HomePageState extends State<HomePage>
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Home Page'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              },
+            ),
+          ],
           bottom: TabBar(
             controller: _tabController,
             indicatorColor: Colors.white,
@@ -55,8 +68,8 @@ class _HomePageState extends State<HomePage>
           controller: _tabController,
           children: [
             // ── Invoices Tab ────────────────────────────────────────
-            Consumer<InvoiceProvider>(
-              builder: (context, invoiceProvider, child) {
+            Consumer2<InvoiceProvider, SettingsProvider>(
+              builder: (context, invoiceProvider, settings, child) {
                 if (invoiceProvider.recentInvoices.isEmpty) {
                   return const Center(
                     child: Column(
@@ -112,7 +125,7 @@ class _HomePageState extends State<HomePage>
                                 'Date: ${DateFormat('MMMM d y').format(invoice.date)}',
                               ),
                               Text(
-                                'Total Amount: ₹${invoice.totalAmount.toStringAsFixed(2)}',
+                                'Total Amount: ₹${invoice.totalAmount.toStringAsFixed(settings.invAmountsDp)}',
                               ),
                               const SizedBox(height: 16.0),
                               Row(
@@ -211,8 +224,8 @@ class _HomePageState extends State<HomePage>
             ),
 
             // ── Vouchers Tab ────────────────────────────────────────
-            Consumer<VoucherProvider>(
-              builder: (context, voucherProvider, child) {
+            Consumer2<VoucherProvider, SettingsProvider>(
+              builder: (context, voucherProvider, settings, child) {
                 if (voucherProvider.recentVouchers.isEmpty) {
                   return const Center(
                     child: Column(
@@ -268,7 +281,7 @@ class _HomePageState extends State<HomePage>
                                 'Date: ${DateFormat('MMMM d y').format(voucher.date)}',
                               ),
                               Text(
-                                'Total Issued Net Wt: ${voucher.totalIssuedNetWeight.toStringAsFixed(3)} g',
+                                'Total Issued Net Wt: ${voucher.totalIssuedNetWeight.toStringAsFixed(settings.vchIssuedNetWtDp)} g',
                               ),
                               const SizedBox(height: 16.0),
                               Row(

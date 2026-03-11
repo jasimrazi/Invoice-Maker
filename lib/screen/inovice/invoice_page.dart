@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:invoice_maker/model/invoice.dart';
 import 'package:invoice_maker/model/product.dart';
 import 'package:invoice_maker/provider/invoice_provider.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:invoice_maker/screen/add_product_page.dart';
 import 'package:invoice_maker/screen/inovice/product_tile.dart';
 import 'package:invoice_maker/screen/inovice/search_recepient.dart';
@@ -147,6 +148,11 @@ class _InvoicePageState extends State<InvoicePage> {
                   final totalAfterTax = provider.calculateTotalAmountAfterTax(
                     gstPercentage,
                   );
+                  final dp =
+                      Provider.of<SettingsProvider>(
+                        context,
+                        listen: false,
+                      ).invAmountsDp;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,24 +187,24 @@ class _InvoicePageState extends State<InvoicePage> {
                           children: [
                             _summaryRow(
                               'Total Before Tax:',
-                              '₹${totalBeforeTax.toStringAsFixed(2)}',
+                              '₹${totalBeforeTax.toStringAsFixed(dp)}',
                             ),
                             _summaryRow(
-                              'CGST (${gstPercentage.toStringAsFixed(2)}%):',
-                              '₹${cgst.toStringAsFixed(2)}',
+                              'CGST (${gstPercentage.toStringAsFixed(dp)}%):',
+                              '₹${cgst.toStringAsFixed(dp)}',
                             ),
                             _summaryRow(
-                              'SGST (${gstPercentage.toStringAsFixed(2)}%):',
-                              '₹${sgst.toStringAsFixed(2)}',
+                              'SGST (${gstPercentage.toStringAsFixed(dp)}%):',
+                              '₹${sgst.toStringAsFixed(dp)}',
                             ),
                             _summaryRow(
                               'Total Tax:',
-                              '₹${totalTax.toStringAsFixed(2)}',
+                              '₹${totalTax.toStringAsFixed(dp)}',
                             ),
                             const Divider(thickness: 1.0),
                             _summaryRow(
                               'Total After Tax:',
-                              '₹${totalAfterTax.toStringAsFixed(2)}',
+                              '₹${totalAfterTax.toStringAsFixed(dp)}',
                               isBold: true,
                               color: Colors.green,
                             ),

@@ -16,6 +16,9 @@ class VoucherGenerator {
     required DateTime date,
     required List<VoucherItem> items,
     required bool isShare,
+    int issuedGrossWtDp = 3,
+    int touchDp = 3,
+    int issuedNetWtDp = 3,
   }) async {
     try {
       final ByteData fontData = await rootBundle.load(
@@ -183,9 +186,13 @@ class VoucherGenerator {
         row.cells[0].value = (i + 1).toString();
         row.cells[1].value = item.itemName;
         row.cells[2].value = item.hsnCode;
-        row.cells[3].value = item.issuedGrossWeight.toStringAsFixed(3);
-        row.cells[4].value = item.touch.toStringAsFixed(3);
-        row.cells[5].value = item.issuedNetWeight.toStringAsFixed(3);
+        row.cells[3].value = item.issuedGrossWeight.toStringAsFixed(
+          issuedGrossWtDp,
+        );
+        row.cells[4].value = item.touch.toStringAsFixed(touchDp);
+        row.cells[5].value = item.issuedNetWeight.toStringAsFixed(
+          issuedNetWtDp,
+        );
 
         for (int j = 0; j < 6; j++) {
           row.cells[j].style = PdfGridCellStyle(
@@ -212,7 +219,9 @@ class VoucherGenerator {
         format: PdfStringFormat(alignment: PdfTextAlignment.right),
         cellPadding: PdfPaddings(left: 4, right: 4, top: 3, bottom: 3),
       );
-      totalRow.cells[5].value = totalIssuedNetWeight.toStringAsFixed(3);
+      totalRow.cells[5].value = totalIssuedNetWeight.toStringAsFixed(
+        issuedNetWtDp,
+      );
       totalRow.cells[5].style = PdfGridCellStyle(
         font: notoSans8Bold,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),

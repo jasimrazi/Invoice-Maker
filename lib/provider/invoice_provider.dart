@@ -8,6 +8,8 @@ import 'package:invoice_maker/model/invoice.dart';
 import 'package:invoice_maker/model/product.dart';
 import 'package:invoice_maker/model/recipient.dart';
 import 'package:invoice_maker/provider/invoice_generator.dart';
+import 'package:invoice_maker/provider/settings_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -302,6 +304,14 @@ class InvoiceProvider extends ChangeNotifier {
     bool isShare = false,
   }) async {
     isPDFloading = true;
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final int grossWtDp = settings.invGrossWtDp;
+    final int stoneWtDp = settings.invStoneWtDp;
+    final int netWtDp = settings.invNetWtDp;
+    final int rateDp = settings.invRateDp;
+    final int stoneChargeDp = settings.invStoneChargeDp;
+    final int taxableDp = settings.invTaxableDp;
+    final int amountsDp = settings.invAmountsDp;
     try {
       // Fetch products associated with the invoice
       final List<Product> products = await _productDB.getProductsByInvoiceId(
@@ -336,6 +346,13 @@ class InvoiceProvider extends ChangeNotifier {
         sgstPercentage: invoice.gst,
         context: context,
         isShare: isShare,
+        grossWtDp: grossWtDp,
+        stoneWtDp: stoneWtDp,
+        netWtDp: netWtDp,
+        rateDp: rateDp,
+        stoneChargeDp: stoneChargeDp,
+        taxableDp: taxableDp,
+        amountsDp: amountsDp,
       );
 
       // Move the success message here
