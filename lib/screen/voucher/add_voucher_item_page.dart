@@ -22,6 +22,7 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
   final TextEditingController touchController = TextEditingController();
   final TextEditingController issuedNetWeightController =
       TextEditingController();
+  String materialType = 'Gold';
 
   final _formKey = GlobalKey<FormState>();
 
@@ -32,6 +33,7 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
     super.initState();
     if (_isEditMode) {
       final i = widget.item!;
+      materialType = i.materialType;
       itemNameController.text = i.itemName;
       hsnCodeController.text = i.hsnCode;
       issuedGrossWeightController.text = i.issuedGrossWeight.toString();
@@ -66,6 +68,30 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Material',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: materialType,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'Gold', child: Text('Gold')),
+                      DropdownMenuItem(value: 'Copper', child: Text('Copper')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => materialType = value);
+                      }
+                    },
+                  ),
                   const SizedBox(height: 16),
 
                   const Text(
@@ -159,6 +185,7 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
               if (_isEditMode) {
                 vp.replaceItem(
                   widget.item!,
+                  materialType: materialType,
                   itemName: itemName,
                   hsnCode: hsnCode,
                   issuedGrossWeight: issuedGrossWeight,
@@ -171,6 +198,7 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
                 Navigator.pop(context);
               } else {
                 vp.addItem(
+                  materialType: materialType,
                   itemName: itemName,
                   hsnCode: hsnCode,
                   issuedGrossWeight: issuedGrossWeight,

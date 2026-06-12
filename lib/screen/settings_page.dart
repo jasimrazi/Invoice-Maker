@@ -11,13 +11,47 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Settings'),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          Card(
+            elevation: 1.0,
+            child: ListTile(
+              title: const Text(
+                'Decimal',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+              ),
+              subtitle: const Text('Decimal places for invoices and vouchers'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DecimalSettingsPage(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DecimalSettingsPage extends StatelessWidget {
+  const DecimalSettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const CustomAppBar(title: 'Decimal Settings'),
       body: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
           return ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
-              // ── Invoice — Weights ────────────────────────────
-              const _SectionHeader(title: 'Invoice — Weights'),
+              const _SectionHeader(title: 'Invoice - Weights'),
               _DecimalTile(
                 label: 'Gross Weight',
                 value: settings.invGrossWtDp,
@@ -33,10 +67,8 @@ class SettingsPage extends StatelessWidget {
                 value: settings.invNetWtDp,
                 onChanged: settings.setInvNetWtDp,
               ),
-              const SizedBox(height: 24.0),
-
-              // ── Invoice — Pricing ──────────────────────────
-              const _SectionHeader(title: 'Invoice — Pricing'),
+              const SizedBox(height: 16.0),
+              const _SectionHeader(title: 'Invoice - Pricing'),
               _DecimalTile(
                 label: 'Rate / Gram',
                 value: settings.invRateDp,
@@ -57,9 +89,7 @@ class SettingsPage extends StatelessWidget {
                 value: settings.invAmountsDp,
                 onChanged: settings.setInvAmountsDp,
               ),
-              const SizedBox(height: 24.0),
-
-              // ── Voucher ──────────────────────────────────
+              const SizedBox(height: 16.0),
               const _SectionHeader(title: 'Voucher'),
               _DecimalTile(
                 label: 'Issued Gross Weight',

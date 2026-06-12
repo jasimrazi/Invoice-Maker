@@ -1,6 +1,7 @@
 class VoucherItem {
   int? itemId;
   final int voucherId;
+  final String materialType;
   final String itemName;
   final String hsnCode;
   final double issuedGrossWeight;
@@ -10,6 +11,7 @@ class VoucherItem {
   VoucherItem({
     this.itemId,
     required this.voucherId,
+    this.materialType = 'Gold',
     required this.itemName,
     required this.hsnCode,
     required this.issuedGrossWeight,
@@ -20,6 +22,7 @@ class VoucherItem {
   Map<String, dynamic> toMap() => {
     'item_id': itemId,
     'voucher_id': voucherId,
+    'material_type': materialType,
     'item_name': itemName,
     'hsn_code': hsnCode,
     'issued_gross_weight': issuedGrossWeight,
@@ -30,6 +33,7 @@ class VoucherItem {
   factory VoucherItem.fromMap(Map<String, dynamic> map) => VoucherItem(
     itemId: map['item_id'] as int?,
     voucherId: map['voucher_id'] as int,
+    materialType: map['material_type'] ?? 'Gold',
     itemName: map['item_name'] ?? '',
     hsnCode: map['hsn_code'] ?? '',
     issuedGrossWeight: (map['issued_gross_weight'] as num).toDouble(),
@@ -40,6 +44,7 @@ class VoucherItem {
   VoucherItem copyWith({
     int? itemId,
     int? voucherId,
+    String? materialType,
     String? itemName,
     String? hsnCode,
     double? issuedGrossWeight,
@@ -48,6 +53,7 @@ class VoucherItem {
   }) => VoucherItem(
     itemId: itemId ?? this.itemId,
     voucherId: voucherId ?? this.voucherId,
+    materialType: materialType ?? this.materialType,
     itemName: itemName ?? this.itemName,
     hsnCode: hsnCode ?? this.hsnCode,
     issuedGrossWeight: issuedGrossWeight ?? this.issuedGrossWeight,

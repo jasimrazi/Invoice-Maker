@@ -70,6 +70,7 @@ class VoucherItemTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _infoText('HSN Code', item.hsnCode),
+                _infoText('Material', item.materialType),
                 _infoText('Touch', item.touch.toStringAsFixed(touchDp)),
               ],
             ),

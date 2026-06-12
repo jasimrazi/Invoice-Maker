@@ -22,7 +22,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
       onOpen: (db) {
@@ -87,6 +87,11 @@ CREATE TABLE products (
     if (oldVersion < 2) {
       await _createVoucherTables(db);
     }
+    if (oldVersion < 3) {
+      await db.execute(
+        "ALTER TABLE voucher_items ADD COLUMN material_type TEXT NOT NULL DEFAULT 'Gold'",
+      );
+    }
   }
 
   Future<void> _createVoucherTables(Database db) async {
@@ -104,6 +109,7 @@ CREATE TABLE IF NOT EXISTS vouchers (
 CREATE TABLE IF NOT EXISTS voucher_items (
   item_id INTEGER PRIMARY KEY AUTOINCREMENT,
   voucher_id INTEGER NOT NULL,
+  material_type TEXT NOT NULL DEFAULT 'Gold',
   item_name TEXT NOT NULL,
   hsn_code TEXT NOT NULL,
   issued_gross_weight REAL NOT NULL,

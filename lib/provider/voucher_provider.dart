@@ -25,6 +25,7 @@ class VoucherProvider extends ChangeNotifier {
   }
 
   void addItem({
+    required String materialType,
     required String itemName,
     required String hsnCode,
     required double issuedGrossWeight,
@@ -34,6 +35,7 @@ class VoucherProvider extends ChangeNotifier {
     addedItems.add(
       VoucherItem(
         voucherId: -1,
+        materialType: materialType,
         itemName: itemName,
         hsnCode: hsnCode,
         issuedGrossWeight: issuedGrossWeight,
@@ -51,6 +53,7 @@ class VoucherProvider extends ChangeNotifier {
 
   void replaceItem(
     VoucherItem oldItem, {
+    required String materialType,
     required String itemName,
     required String hsnCode,
     required double issuedGrossWeight,
@@ -61,6 +64,7 @@ class VoucherProvider extends ChangeNotifier {
     if (index == -1) return;
     addedItems[index] = oldItem.copyWith(
       itemName: itemName,
+      materialType: materialType,
       hsnCode: hsnCode,
       issuedGrossWeight: issuedGrossWeight,
       touch: touch,

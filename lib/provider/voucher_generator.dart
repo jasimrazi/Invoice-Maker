@@ -148,20 +148,22 @@ class VoucherGenerator {
 
       // ── Items table ───────────────────────────────────────────────────────
       final PdfGrid grid = PdfGrid();
-      grid.columns.add(count: 6);
+      grid.columns.add(count: 7);
 
       final double tableWidth = pageSize.width;
       grid.columns[0].width = tableWidth * 0.06; // Sl No.
-      grid.columns[1].width = tableWidth * 0.28; // Item Name
-      grid.columns[2].width = tableWidth * 0.16; // HSN Code
-      grid.columns[3].width = tableWidth * 0.18; // Issued Gross Wt
-      grid.columns[4].width = tableWidth * 0.12; // Touch
-      grid.columns[5].width = tableWidth * 0.20; // Issued Net Wgt
+      grid.columns[1].width = tableWidth * 0.22; // Item Name
+      grid.columns[2].width = tableWidth * 0.12; // Material
+      grid.columns[3].width = tableWidth * 0.14; // HSN Code
+      grid.columns[4].width = tableWidth * 0.17; // Issued Gross Wt
+      grid.columns[5].width = tableWidth * 0.11; // Touch
+      grid.columns[6].width = tableWidth * 0.18; // Issued Net Wgt
 
       grid.headers.add(1);
       final List<String> headers = [
         "Sl No.",
         "Item Name",
+        "Material",
         "HSN Code",
         "Issued Gross Wt",
         "Touch",
@@ -185,16 +187,17 @@ class VoucherGenerator {
         final PdfGridRow row = grid.rows.add();
         row.cells[0].value = (i + 1).toString();
         row.cells[1].value = item.itemName;
-        row.cells[2].value = item.hsnCode;
-        row.cells[3].value = item.issuedGrossWeight.toStringAsFixed(
+        row.cells[2].value = item.materialType;
+        row.cells[3].value = item.hsnCode;
+        row.cells[4].value = item.issuedGrossWeight.toStringAsFixed(
           issuedGrossWtDp,
         );
-        row.cells[4].value = item.touch.toStringAsFixed(touchDp);
-        row.cells[5].value = item.issuedNetWeight.toStringAsFixed(
+        row.cells[5].value = item.touch.toStringAsFixed(touchDp);
+        row.cells[6].value = item.issuedNetWeight.toStringAsFixed(
           issuedNetWtDp,
         );
 
-        for (int j = 0; j < 6; j++) {
+        for (int j = 0; j < 7; j++) {
           row.cells[j].style = PdfGridCellStyle(
             font: notoSans8,
             format: PdfStringFormat(
@@ -213,16 +216,16 @@ class VoucherGenerator {
       // Total row
       final PdfGridRow totalRow = grid.rows.add();
       totalRow.cells[0].value = "Total";
-      totalRow.cells[0].columnSpan = 5;
+      totalRow.cells[0].columnSpan = 6;
       totalRow.cells[0].style = PdfGridCellStyle(
         font: notoSans8Bold,
         format: PdfStringFormat(alignment: PdfTextAlignment.right),
         cellPadding: PdfPaddings(left: 4, right: 4, top: 3, bottom: 3),
       );
-      totalRow.cells[5].value = totalIssuedNetWeight.toStringAsFixed(
+      totalRow.cells[6].value = totalIssuedNetWeight.toStringAsFixed(
         issuedNetWtDp,
       );
-      totalRow.cells[5].style = PdfGridCellStyle(
+      totalRow.cells[6].style = PdfGridCellStyle(
         font: notoSans8Bold,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 3, bottom: 3),
