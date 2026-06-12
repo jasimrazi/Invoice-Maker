@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Invoice #${invoice.invoiceId}',
+                                'Invoice #${settings.formatInvoiceNumber(invoice.invoiceId!, invoice.date)}',
                                 style: const TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,

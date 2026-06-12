@@ -33,9 +33,127 @@ class SettingsPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            elevation: 1.0,
+            child: ListTile(
+              title: const Text(
+                'Invoice Numbering',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+              ),
+              subtitle: const Text('Choose invoice number format'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const InvoiceNumberingSettingsPage(),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
+  }
+}
+
+class InvoiceNumberingSettingsPage extends StatelessWidget {
+  const InvoiceNumberingSettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const CustomAppBar(title: 'Invoice Numbering'),
+      body: Consumer<SettingsProvider>(
+        builder: (context, settings, _) {
+          return ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              Card(
+                elevation: 1.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Format',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      DropdownButtonFormField<String>(
+                        initialValue: settings.invNumberFormat,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        items: [
+                          const DropdownMenuItem(
+                            value: SettingsProvider.invoiceNumberNumeric,
+                            child: Text('Number only (1, 2, 3)'),
+                          ),
+                          DropdownMenuItem(
+                            value: SettingsProvider.invoiceNumberYearlyLetter,
+                            child: Text(
+                              'Yearly letter (${settings.formatInvoiceNumber(1, DateTime.now())})',
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) settings.setInvNumberFormat(value);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (settings.invNumberFormat ==
+                  SettingsProvider.invoiceNumberYearlyLetter) ...[
+                const SizedBox(height: 16.0),
+                const _SectionHeader(title: 'Yearly Letter Starts From'),
+                _NumberDropdownTile(
+                  label: 'Start Month',
+                  value: settings.invNumberStartMonth,
+                  values: List.generate(12, (i) => i + 1),
+                  labelFor: _monthName,
+                  onChanged: settings.setInvNumberStartMonth,
+                ),
+                _NumberDropdownTile(
+                  label: 'Start Year',
+                  value: settings.invNumberStartYear,
+                  values: List.generate(21, (i) => 2020 + i),
+                  labelFor: (value) => value.toString(),
+                  onChanged: settings.setInvNumberStartYear,
+                ),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  String _monthName(int month) {
+    const names = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return names[month - 1];
   }
 }
 
@@ -186,6 +304,68 @@ class _DecimalTile extends StatelessWidget {
                   ),
                 ),
               ),
+              onChanged: (v) {
+                if (v != null) onChanged(v);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NumberDropdownTile extends StatelessWidget {
+  final String label;
+  final int value;
+  final List<int> values;
+  final String Function(int) labelFor;
+  final Future<void> Function(int) onChanged;
+
+  const _NumberDropdownTile({
+    required this.label,
+    required this.value,
+    required this.values,
+    required this.labelFor,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1.0,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            DropdownButton<int>(
+              value: value,
+              underline: const SizedBox(),
+              items:
+                  values
+                      .map(
+                        (v) => DropdownMenuItem(
+                          value: v,
+                          child: Text(
+                            labelFor(v),
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
               onChanged: (v) {
                 if (v != null) onChanged(v);
               },

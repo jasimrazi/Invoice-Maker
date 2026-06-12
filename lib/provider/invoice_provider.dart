@@ -336,7 +336,10 @@ class InvoiceProvider extends ChangeNotifier {
 
       // Use the InvoiceGenerator to create the PDF
       await _invoiceGenerator.createInvoice(
-        invoiceId: invoice.invoiceId.toString(),
+        invoiceId: settings.formatInvoiceNumber(
+          invoice.invoiceId!,
+          invoice.date,
+        ),
         recipientName: invoice.recipient.name,
         recipientAddress: invoice.recipient.address,
         recipientPlace: invoice.recipient.place,

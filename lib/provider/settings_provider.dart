@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider extends ChangeNotifier {
+  static const String invoiceNumberNumeric = 'numeric';
+  static const String invoiceNumberYearlyLetter = 'yearly_letter';
+
   // ── Invoice keys ─────────────────────────────────────
   static const String _kInvGrossWt = 'inv_gross_wt_dp';
   static const String _kInvStoneWt = 'inv_stone_wt_dp';
@@ -10,6 +13,9 @@ class SettingsProvider extends ChangeNotifier {
   static const String _kInvStoneCharge = 'inv_stone_charge_dp';
   static const String _kInvTaxable = 'inv_taxable_dp';
   static const String _kInvAmounts = 'inv_amounts_dp';
+  static const String _kInvNumberFormat = 'inv_number_format';
+  static const String _kInvNumberStartYear = 'inv_number_start_year';
+  static const String _kInvNumberStartMonth = 'inv_number_start_month';
 
   // ── Voucher keys ────────────────────────────────────
   static const String _kVchIssuedGrossWt = 'vch_issued_gross_wt_dp';
@@ -24,6 +30,9 @@ class SettingsProvider extends ChangeNotifier {
   int _invStoneChargeDp = 2;
   int _invTaxableDp = 2;
   int _invAmountsDp = 2;
+  String _invNumberFormat = invoiceNumberYearlyLetter;
+  int _invNumberStartYear = 2026;
+  int _invNumberStartMonth = 6;
 
   // ── Voucher state ──────────────────────────────────
   int _vchIssuedGrossWtDp = 3;
@@ -38,6 +47,9 @@ class SettingsProvider extends ChangeNotifier {
   int get invStoneChargeDp => _invStoneChargeDp;
   int get invTaxableDp => _invTaxableDp;
   int get invAmountsDp => _invAmountsDp;
+  String get invNumberFormat => _invNumberFormat;
+  int get invNumberStartYear => _invNumberStartYear;
+  int get invNumberStartMonth => _invNumberStartMonth;
 
   // ── Voucher getters ───────────────────────────────
   int get vchIssuedGrossWtDp => _vchIssuedGrossWtDp;
@@ -57,6 +69,10 @@ class SettingsProvider extends ChangeNotifier {
     _invStoneChargeDp = prefs.getInt(_kInvStoneCharge) ?? 2;
     _invTaxableDp = prefs.getInt(_kInvTaxable) ?? 2;
     _invAmountsDp = prefs.getInt(_kInvAmounts) ?? 2;
+    _invNumberFormat =
+        prefs.getString(_kInvNumberFormat) ?? invoiceNumberYearlyLetter;
+    _invNumberStartYear = prefs.getInt(_kInvNumberStartYear) ?? 2026;
+    _invNumberStartMonth = prefs.getInt(_kInvNumberStartMonth) ?? 6;
 
     _vchIssuedGrossWtDp = prefs.getInt(_kVchIssuedGrossWt) ?? 3;
     _vchTouchDp = prefs.getInt(_kVchTouch) ?? 3;
@@ -67,6 +83,24 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> _save(String key, int value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(key, value);
+  }
+
+  Future<void> _saveString(String key, String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
+
+  String formatInvoiceNumber(int invoiceId, DateTime date) {
+    if (_invNumberFormat == invoiceNumberNumeric) {
+      return invoiceId.toString();
+    }
+
+    final cycle =
+        (date.year - _invNumberStartYear) -
+        (date.month < _invNumberStartMonth ? 1 : 0);
+    final letterIndex = cycle < 0 ? 0 : cycle;
+    final prefix = String.fromCharCode('A'.codeUnitAt(0) + letterIndex % 26);
+    return '$prefix$invoiceId';
   }
 
   // ── Invoice setters ────────────────────────────────
@@ -110,6 +144,24 @@ class SettingsProvider extends ChangeNotifier {
     _invAmountsDp = v;
     notifyListeners();
     await _save(_kInvAmounts, v);
+  }
+
+  Future<void> setInvNumberFormat(String v) async {
+    _invNumberFormat = v;
+    notifyListeners();
+    await _saveString(_kInvNumberFormat, v);
+  }
+
+  Future<void> setInvNumberStartYear(int v) async {
+    _invNumberStartYear = v;
+    notifyListeners();
+    await _save(_kInvNumberStartYear, v);
+  }
+
+  Future<void> setInvNumberStartMonth(int v) async {
+    _invNumberStartMonth = v;
+    notifyListeners();
+    await _save(_kInvNumberStartMonth, v);
   }
 
   // ── Voucher setters ──────────────────────────────
