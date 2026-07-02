@@ -15,7 +15,7 @@ class VoucherProvider extends ChangeNotifier {
   bool isPDFLoading = false;
 
   double get totalIssuedNetWeight =>
-      addedItems.fold(0.0, (sum, item) => sum + item.issuedNetWeight);
+      addedItems.fold(0.0, (sum, item) => sum + item.totalIssuedNetWeight);
 
   String? validateField(String? value) {
     if (value == null || value.trim().isEmpty) {
@@ -25,22 +25,24 @@ class VoucherProvider extends ChangeNotifier {
   }
 
   void addItem({
-    required String materialType,
     required String itemName,
     required String hsnCode,
     required double issuedGrossWeight,
     required double touch,
     required double issuedNetWeight,
+    double? copperGrossWeight,
+    double? copperNetWeight,
   }) {
     addedItems.add(
       VoucherItem(
         voucherId: -1,
-        materialType: materialType,
         itemName: itemName,
         hsnCode: hsnCode,
         issuedGrossWeight: issuedGrossWeight,
         touch: touch,
         issuedNetWeight: issuedNetWeight,
+        copperGrossWeight: copperGrossWeight,
+        copperNetWeight: copperNetWeight,
       ),
     );
     notifyListeners();
@@ -53,22 +55,26 @@ class VoucherProvider extends ChangeNotifier {
 
   void replaceItem(
     VoucherItem oldItem, {
-    required String materialType,
     required String itemName,
     required String hsnCode,
     required double issuedGrossWeight,
     required double touch,
     required double issuedNetWeight,
+    double? copperGrossWeight,
+    double? copperNetWeight,
   }) {
     final index = addedItems.indexOf(oldItem);
     if (index == -1) return;
-    addedItems[index] = oldItem.copyWith(
+    addedItems[index] = VoucherItem(
+      itemId: oldItem.itemId,
+      voucherId: oldItem.voucherId,
       itemName: itemName,
-      materialType: materialType,
       hsnCode: hsnCode,
       issuedGrossWeight: issuedGrossWeight,
       touch: touch,
       issuedNetWeight: issuedNetWeight,
+      copperGrossWeight: copperGrossWeight,
+      copperNetWeight: copperNetWeight,
     );
     notifyListeners();
   }
@@ -84,7 +90,10 @@ class VoucherProvider extends ChangeNotifier {
     required DateTime date,
     required List<VoucherItem> items,
   }) async {
-    final double total = items.fold(0.0, (sum, i) => sum + i.issuedNetWeight);
+    final double total = items.fold(
+      0.0,
+      (sum, i) => sum + i.totalIssuedNetWeight,
+    );
 
     final voucher = Voucher(
       name: name,
@@ -132,7 +141,10 @@ class VoucherProvider extends ChangeNotifier {
     required DateTime date,
     required List<VoucherItem> items,
   }) async {
-    final double total = items.fold(0.0, (sum, i) => sum + i.issuedNetWeight);
+    final double total = items.fold(
+      0.0,
+      (sum, i) => sum + i.totalIssuedNetWeight,
+    );
 
     final voucher = Voucher(
       voucherId: voucherId,

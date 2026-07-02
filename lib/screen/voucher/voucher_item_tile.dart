@@ -22,6 +22,8 @@ class VoucherItemTile extends StatelessWidget {
     final issuedGrossWtDp = settings.vchIssuedGrossWtDp;
     final touchDp = settings.vchTouchDp;
     final issuedNetWtDp = settings.vchIssuedNetWtDp;
+    final hasCopper =
+        item.copperGrossWeight != null || item.copperNetWeight != null;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.0),
@@ -70,7 +72,6 @@ class VoucherItemTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _infoText('HSN Code', item.hsnCode),
-                _infoText('Material', item.materialType),
                 _infoText('Touch', item.touch.toStringAsFixed(touchDp)),
               ],
             ),
@@ -90,6 +91,27 @@ class VoucherItemTile extends StatelessWidget {
                 ),
               ],
             ),
+            if (hasCopper) ...[
+              const SizedBox(height: 10.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _infoText('Copper', ''),
+                  _infoText(
+                    'Gross Wt',
+                    item.copperGrossWeight == null
+                        ? '-'
+                        : '${item.copperGrossWeight!.toStringAsFixed(issuedGrossWtDp)} g',
+                  ),
+                  _infoText(
+                    'Net Wt',
+                    item.copperNetWeight == null
+                        ? '-'
+                        : '${item.copperNetWeight!.toStringAsFixed(issuedNetWtDp)} g',
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 12.0),
             Divider(thickness: 1.0, color: AppColors.borderColor),
             const SizedBox(height: 8.0),
@@ -102,7 +124,7 @@ class VoucherItemTile extends StatelessWidget {
                   style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
                 ),
                 Text(
-                  '${item.issuedNetWeight.toStringAsFixed(issuedNetWtDp)} g',
+                  '${item.totalIssuedNetWeight.toStringAsFixed(issuedNetWtDp)} g',
                   style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,

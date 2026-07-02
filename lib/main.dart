@@ -31,8 +31,18 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const BouncingScrollBehavior(),
       theme: AppTheme.lightTheme,
       home: HomePage(),
     );
+  }
+}
+
+class BouncingScrollBehavior extends MaterialScrollBehavior {
+  const BouncingScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const BouncingScrollPhysics();
   }
 }

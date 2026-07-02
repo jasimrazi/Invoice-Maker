@@ -22,7 +22,10 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
   final TextEditingController touchController = TextEditingController();
   final TextEditingController issuedNetWeightController =
       TextEditingController();
-  String materialType = 'Gold';
+  final TextEditingController copperGrossWeightController =
+      TextEditingController();
+  final TextEditingController copperNetWeightController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -33,12 +36,13 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
     super.initState();
     if (_isEditMode) {
       final i = widget.item!;
-      materialType = i.materialType;
       itemNameController.text = i.itemName;
       hsnCodeController.text = i.hsnCode;
       issuedGrossWeightController.text = i.issuedGrossWeight.toString();
       touchController.text = i.touch.toString();
       issuedNetWeightController.text = i.issuedNetWeight.toString();
+      copperGrossWeightController.text = i.copperGrossWeight?.toString() ?? '';
+      copperNetWeightController.text = i.copperNetWeight?.toString() ?? '';
     }
   }
 
@@ -49,6 +53,8 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
     issuedGrossWeightController.dispose();
     touchController.dispose();
     issuedNetWeightController.dispose();
+    copperGrossWeightController.dispose();
+    copperNetWeightController.dispose();
     super.dispose();
   }
 
@@ -68,30 +74,6 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
-
-                  const Text(
-                    'Material',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    initialValue: materialType,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'Gold', child: Text('Gold')),
-                      DropdownMenuItem(value: 'Copper', child: Text('Copper')),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => materialType = value);
-                      }
-                    },
-                  ),
                   const SizedBox(height: 16),
 
                   const Text(
@@ -162,6 +144,28 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
+
+                  const Text(
+                    'Copper (Optional)',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  CustomTextField(
+                    hintText: 'Copper Gross Weight',
+                    controller: copperGrossWeightController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    hintText: 'Copper Net Weight',
+                    controller: copperNetWeightController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -181,16 +185,25 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
               final issuedNetWeight = double.parse(
                 issuedNetWeightController.text,
               );
+              final copperGrossWeight =
+                  copperGrossWeightController.text.trim().isEmpty
+                      ? null
+                      : double.parse(copperGrossWeightController.text);
+              final copperNetWeight =
+                  copperNetWeightController.text.trim().isEmpty
+                      ? null
+                      : double.parse(copperNetWeightController.text);
 
               if (_isEditMode) {
                 vp.replaceItem(
                   widget.item!,
-                  materialType: materialType,
                   itemName: itemName,
                   hsnCode: hsnCode,
                   issuedGrossWeight: issuedGrossWeight,
                   touch: touch,
                   issuedNetWeight: issuedNetWeight,
+                  copperGrossWeight: copperGrossWeight,
+                  copperNetWeight: copperNetWeight,
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Item updated successfully!')),
@@ -198,12 +211,13 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
                 Navigator.pop(context);
               } else {
                 vp.addItem(
-                  materialType: materialType,
                   itemName: itemName,
                   hsnCode: hsnCode,
                   issuedGrossWeight: issuedGrossWeight,
                   touch: touch,
                   issuedNetWeight: issuedNetWeight,
+                  copperGrossWeight: copperGrossWeight,
+                  copperNetWeight: copperNetWeight,
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Item added successfully!')),
@@ -211,6 +225,8 @@ class _AddVoucherItemPageState extends State<AddVoucherItemPage> {
                 issuedGrossWeightController.clear();
                 touchController.clear();
                 issuedNetWeightController.clear();
+                copperGrossWeightController.clear();
+                copperNetWeightController.clear();
               }
             }
           },

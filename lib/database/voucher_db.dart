@@ -49,12 +49,13 @@ class VoucherDB {
     final db = await _dbHelper.database;
     return await db.insert('voucher_items', {
       'voucher_id': voucherId,
-      'material_type': item.materialType,
       'item_name': item.itemName,
       'hsn_code': item.hsnCode,
       'issued_gross_weight': item.issuedGrossWeight,
       'touch': item.touch,
       'issued_net_weight': item.issuedNetWeight,
+      'copper_gross_weight': item.copperGrossWeight,
+      'copper_net_weight': item.copperNetWeight,
     });
   }
 

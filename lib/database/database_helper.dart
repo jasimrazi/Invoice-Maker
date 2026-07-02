@@ -22,7 +22,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
       onOpen: (db) {
@@ -92,6 +92,14 @@ CREATE TABLE products (
         "ALTER TABLE voucher_items ADD COLUMN material_type TEXT NOT NULL DEFAULT 'Gold'",
       );
     }
+    if (oldVersion < 4) {
+      await db.execute(
+        'ALTER TABLE voucher_items ADD COLUMN copper_gross_weight REAL',
+      );
+      await db.execute(
+        'ALTER TABLE voucher_items ADD COLUMN copper_net_weight REAL',
+      );
+    }
   }
 
   Future<void> _createVoucherTables(Database db) async {
@@ -115,6 +123,8 @@ CREATE TABLE IF NOT EXISTS voucher_items (
   issued_gross_weight REAL NOT NULL,
   touch REAL NOT NULL,
   issued_net_weight REAL NOT NULL,
+  copper_gross_weight REAL,
+  copper_net_weight REAL,
   FOREIGN KEY (voucher_id) REFERENCES vouchers (voucher_id) ON DELETE CASCADE
 );
     ''');

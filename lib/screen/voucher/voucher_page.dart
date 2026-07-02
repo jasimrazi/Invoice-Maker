@@ -256,7 +256,7 @@ class _VoucherPageState extends State<VoucherPage> {
                   items: items,
                   totalIssuedNetWeight: items.fold<double>(
                     0.0,
-                    (s, i) => s + i.issuedNetWeight,
+                    (s, i) => s + i.totalIssuedNetWeight,
                   ),
                 );
                 await vp.generateVoucherPDF(voucher: updated, context: context);

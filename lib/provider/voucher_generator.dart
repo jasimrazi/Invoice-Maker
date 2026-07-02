@@ -148,26 +148,32 @@ class VoucherGenerator {
 
       // ── Items table ───────────────────────────────────────────────────────
       final PdfGrid grid = PdfGrid();
-      grid.columns.add(count: 7);
+      grid.columns.add(count: 10);
 
       final double tableWidth = pageSize.width;
-      grid.columns[0].width = tableWidth * 0.06; // Sl No.
-      grid.columns[1].width = tableWidth * 0.22; // Item Name
-      grid.columns[2].width = tableWidth * 0.12; // Material
-      grid.columns[3].width = tableWidth * 0.14; // HSN Code
-      grid.columns[4].width = tableWidth * 0.17; // Issued Gross Wt
-      grid.columns[5].width = tableWidth * 0.11; // Touch
-      grid.columns[6].width = tableWidth * 0.18; // Issued Net Wgt
+      grid.columns[0].width = tableWidth * 0.19; // Item Name
+      grid.columns[1].width = tableWidth * 0.08; // HSN Code
+      grid.columns[2].width = tableWidth * 0.05; // Qty.
+      grid.columns[3].width = tableWidth * 0.13; // Issued Gr. Wgt.
+      grid.columns[4].width = tableWidth * 0.10; // Received Gr. Wgt.
+      grid.columns[5].width = tableWidth * 0.08; // Mud Less
+      grid.columns[6].width = tableWidth * 0.08; // Touch
+      grid.columns[7].width = tableWidth * 0.08; // MC / Amt
+      grid.columns[8].width = tableWidth * 0.11; // Issued Net. Wgt
+      grid.columns[9].width = tableWidth * 0.10; // Received Net. Wgt.
 
       grid.headers.add(1);
       final List<String> headers = [
-        "Sl No.",
         "Item Name",
-        "Material",
         "HSN Code",
-        "Issued Gross Wt",
+        "Qty.",
+        "Issued Gr. Wgt.",
+        "Received Gr. Wgt.",
+        "Mud Less",
         "Touch",
-        "Issued Net Wgt",
+        "MC / Amt",
+        "Issued Net. Wgt",
+        "Received Net. Wgt.",
       ];
       final PdfGridRow headerRow = grid.headers[0];
       for (int i = 0; i < headers.length; i++) {
@@ -185,47 +191,79 @@ class VoucherGenerator {
       for (int i = 0; i < items.length; i++) {
         final item = items[i];
         final PdfGridRow row = grid.rows.add();
-        row.cells[0].value = (i + 1).toString();
-        row.cells[1].value = item.itemName;
-        row.cells[2].value = item.materialType;
-        row.cells[3].value = item.hsnCode;
-        row.cells[4].value = item.issuedGrossWeight.toStringAsFixed(
+        row.cells[0].value = item.itemName;
+        row.cells[1].value = item.hsnCode;
+        row.cells[2].value = '';
+        row.cells[3].value = item.issuedGrossWeight.toStringAsFixed(
           issuedGrossWtDp,
         );
-        row.cells[5].value = item.touch.toStringAsFixed(touchDp);
-        row.cells[6].value = item.issuedNetWeight.toStringAsFixed(
+        row.cells[4].value = '';
+        row.cells[5].value = '';
+        row.cells[6].value = item.touch.toStringAsFixed(touchDp);
+        row.cells[7].value = '';
+        row.cells[8].value = item.issuedNetWeight.toStringAsFixed(
           issuedNetWtDp,
         );
+        row.cells[9].value = '';
 
-        for (int j = 0; j < 7; j++) {
+        for (int j = 0; j < 10; j++) {
           row.cells[j].style = PdfGridCellStyle(
             font: notoSans8,
             format: PdfStringFormat(
               alignment:
-                  j == 1 ? PdfTextAlignment.left : PdfTextAlignment.center,
+                  j == 0 ? PdfTextAlignment.left : PdfTextAlignment.center,
               wordWrap:
-                  j == 1 ? PdfWordWrapType.character : PdfWordWrapType.word,
+                  j == 0 ? PdfWordWrapType.character : PdfWordWrapType.word,
             ),
             cellPadding: PdfPaddings(left: 2, right: 2, top: 3, bottom: 3),
           );
         }
 
-        totalIssuedNetWeight += item.issuedNetWeight;
+        totalIssuedNetWeight += item.totalIssuedNetWeight;
+
+        if (item.copperGrossWeight != null || item.copperNetWeight != null) {
+          final PdfGridRow copperRow = grid.rows.add();
+          copperRow.cells[0].value = 'COPPER';
+          copperRow.cells[1].value = '';
+          copperRow.cells[2].value = '';
+          copperRow.cells[3].value =
+              item.copperGrossWeight?.toStringAsFixed(issuedGrossWtDp) ?? '';
+          copperRow.cells[4].value = '';
+          copperRow.cells[5].value = '';
+          copperRow.cells[6].value = '';
+          copperRow.cells[7].value = '';
+          copperRow.cells[8].value =
+              item.copperNetWeight?.toStringAsFixed(issuedNetWtDp) ?? '';
+          copperRow.cells[9].value = '';
+
+          for (int j = 0; j < 10; j++) {
+            copperRow.cells[j].style = PdfGridCellStyle(
+              font: notoSans8,
+              format: PdfStringFormat(
+                alignment:
+                    j == 0 ? PdfTextAlignment.left : PdfTextAlignment.center,
+                wordWrap:
+                    j == 0 ? PdfWordWrapType.character : PdfWordWrapType.word,
+              ),
+              cellPadding: PdfPaddings(left: 2, right: 2, top: 3, bottom: 3),
+            );
+          }
+        }
       }
 
       // Total row
       final PdfGridRow totalRow = grid.rows.add();
       totalRow.cells[0].value = "Total";
-      totalRow.cells[0].columnSpan = 6;
+      totalRow.cells[0].columnSpan = 8;
       totalRow.cells[0].style = PdfGridCellStyle(
         font: notoSans8Bold,
         format: PdfStringFormat(alignment: PdfTextAlignment.right),
         cellPadding: PdfPaddings(left: 4, right: 4, top: 3, bottom: 3),
       );
-      totalRow.cells[6].value = totalIssuedNetWeight.toStringAsFixed(
+      totalRow.cells[8].value = totalIssuedNetWeight.toStringAsFixed(
         issuedNetWtDp,
       );
-      totalRow.cells[6].style = PdfGridCellStyle(
+      totalRow.cells[8].style = PdfGridCellStyle(
         font: notoSans8Bold,
         format: PdfStringFormat(alignment: PdfTextAlignment.center),
         cellPadding: PdfPaddings(left: 2, right: 2, top: 3, bottom: 3),

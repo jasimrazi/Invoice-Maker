@@ -1,63 +1,71 @@
 class VoucherItem {
   int? itemId;
   final int voucherId;
-  final String materialType;
   final String itemName;
   final String hsnCode;
   final double issuedGrossWeight;
   final double touch;
   final double issuedNetWeight;
+  final double? copperGrossWeight;
+  final double? copperNetWeight;
 
   VoucherItem({
     this.itemId,
     required this.voucherId,
-    this.materialType = 'Gold',
     required this.itemName,
     required this.hsnCode,
     required this.issuedGrossWeight,
     required this.touch,
     required this.issuedNetWeight,
+    this.copperGrossWeight,
+    this.copperNetWeight,
   });
 
   Map<String, dynamic> toMap() => {
     'item_id': itemId,
     'voucher_id': voucherId,
-    'material_type': materialType,
     'item_name': itemName,
     'hsn_code': hsnCode,
     'issued_gross_weight': issuedGrossWeight,
     'touch': touch,
     'issued_net_weight': issuedNetWeight,
+    'copper_gross_weight': copperGrossWeight,
+    'copper_net_weight': copperNetWeight,
   };
 
   factory VoucherItem.fromMap(Map<String, dynamic> map) => VoucherItem(
     itemId: map['item_id'] as int?,
     voucherId: map['voucher_id'] as int,
-    materialType: map['material_type'] ?? 'Gold',
     itemName: map['item_name'] ?? '',
     hsnCode: map['hsn_code'] ?? '',
     issuedGrossWeight: (map['issued_gross_weight'] as num).toDouble(),
     touch: (map['touch'] as num).toDouble(),
     issuedNetWeight: (map['issued_net_weight'] as num).toDouble(),
+    copperGrossWeight: (map['copper_gross_weight'] as num?)?.toDouble(),
+    copperNetWeight: (map['copper_net_weight'] as num?)?.toDouble(),
   );
 
   VoucherItem copyWith({
     int? itemId,
     int? voucherId,
-    String? materialType,
     String? itemName,
     String? hsnCode,
     double? issuedGrossWeight,
     double? touch,
     double? issuedNetWeight,
+    double? copperGrossWeight,
+    double? copperNetWeight,
   }) => VoucherItem(
     itemId: itemId ?? this.itemId,
     voucherId: voucherId ?? this.voucherId,
-    materialType: materialType ?? this.materialType,
     itemName: itemName ?? this.itemName,
     hsnCode: hsnCode ?? this.hsnCode,
     issuedGrossWeight: issuedGrossWeight ?? this.issuedGrossWeight,
     touch: touch ?? this.touch,
     issuedNetWeight: issuedNetWeight ?? this.issuedNetWeight,
+    copperGrossWeight: copperGrossWeight ?? this.copperGrossWeight,
+    copperNetWeight: copperNetWeight ?? this.copperNetWeight,
   );
+
+  double get totalIssuedNetWeight => issuedNetWeight + (copperNetWeight ?? 0.0);
 }

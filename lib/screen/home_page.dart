@@ -99,7 +99,9 @@ class _HomePageState extends State<HomePage>
                     ).fetchInvoices();
                   },
                   child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
                     padding: const EdgeInsets.all(16.0),
                     itemCount: invoices.length,
                     itemBuilder: (context, index) {
@@ -255,7 +257,9 @@ class _HomePageState extends State<HomePage>
                     ).fetchVouchers();
                   },
                   child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
                     padding: const EdgeInsets.all(16.0),
                     itemCount: vouchers.length,
                     itemBuilder: (context, index) {
