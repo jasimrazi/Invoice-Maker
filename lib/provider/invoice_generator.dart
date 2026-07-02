@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:invoice_maker/utils/amount_in_words.dart';
 import 'package:invoice_maker/utils/default_values.dart';
 import 'package:invoice_maker/utils/first_word.dart';
 // import 'package:invoice_maker/utils/truncate_with_ellpises.dart';
@@ -23,7 +22,6 @@ class InvoiceGenerator {
     required List<Map<String, dynamic>> products,
     required double cgstPercentage,
     required double sgstPercentage,
-    required BuildContext context,
     bool isShare = false,
     int grossWtDp = 2,
     int stoneWtDp = 2,
@@ -545,7 +543,7 @@ class InvoiceGenerator {
       String firstName = getFirstWord(recipientName);
 
       final Directory directory = await getApplicationDocumentsDirectory();
-      final String filePath = "${directory.path}/${firstName}_${invoiceId}.pdf";
+      final String filePath = "${directory.path}/${firstName}_$invoiceId.pdf";
       final File file = File(filePath);
       await file.writeAsBytes(await document.save());
 
@@ -554,7 +552,7 @@ class InvoiceGenerator {
           ? Share.shareXFiles([XFile(filePath)], text: "Invoice $invoiceId")
           : OpenFilex.open(filePath);
     } catch (e) {
-      print("Exception: Failed to generate PDF: $e");
+      debugPrint("Exception: Failed to generate PDF: $e");
     }
   }
 }

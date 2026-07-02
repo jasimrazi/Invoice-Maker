@@ -72,6 +72,7 @@ class AddRecepientPage extends StatelessWidget {
                   gstin: gstinController.text,
                   place: placeController.text,
                 );
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Recipient added successfully!'),
@@ -82,6 +83,7 @@ class AddRecepientPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => InvoicePage()),
                 ); // Go back after adding
               } catch (e) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(e.toString())));

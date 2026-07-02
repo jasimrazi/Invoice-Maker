@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:invoice_maker/database/invoice_db.dart';
 import 'package:invoice_maker/database/product_db.dart';
@@ -10,8 +8,6 @@ import 'package:invoice_maker/model/recipient.dart';
 import 'package:invoice_maker/provider/invoice_generator.dart';
 import 'package:invoice_maker/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 
 class InvoiceProvider extends ChangeNotifier {
   final InvoiceDB _invoiceDB = InvoiceDB();
@@ -29,7 +25,7 @@ class InvoiceProvider extends ChangeNotifier {
 
   void updateSuggestions(List<Recipient> newSuggestions) {
     suggestions = newSuggestions;
-    print('Updated suggestions: $suggestions'); // Debug log
+    debugPrint('Updated suggestions: $suggestions');
     notifyListeners();
   }
 
@@ -92,7 +88,7 @@ class InvoiceProvider extends ChangeNotifier {
     // Add the product to the list temporarily
     addedProducts.add(product); // Add to the temporary list
     notifyListeners(); // Notify listeners to update the UI
-    print('Product added temporarily: $product'); // Debug log
+    debugPrint('Product added temporarily: $product');
   }
 
   void removeProduct(Product product) async {
@@ -100,9 +96,9 @@ class InvoiceProvider extends ChangeNotifier {
       // Remove the product from the list
       addedProducts.remove(product);
       notifyListeners(); // Notify listeners to update the UI
-      print('Product removed: ${product.description}');
+      debugPrint('Product removed: ${product.description}');
     } catch (e) {
-      print('Error removing product: $e');
+      debugPrint('Error removing product: $e');
     }
   }
 
@@ -137,7 +133,7 @@ class InvoiceProvider extends ChangeNotifier {
   void clearProductList() {
     addedProducts.clear(); // Clear the temporary list
     notifyListeners(); // Notify listeners to update the UI
-    print('Product list cleared.'); // Debug log
+    debugPrint('Product list cleared.');
   }
 
   double calculateTotalAmountBeforeTax() {
@@ -211,7 +207,7 @@ class InvoiceProvider extends ChangeNotifier {
       selectedRecipient = null;
       await fetchInvoices();
     } catch (e) {
-      print('Error updating invoice: $e');
+      debugPrint('Error updating invoice: $e');
       throw Exception('Failed to update invoice: $e');
     }
   }
@@ -268,10 +264,10 @@ class InvoiceProvider extends ChangeNotifier {
       addedProducts.clear();
       notifyListeners();
 
-      print('Invoice and associated products added successfully.');
+      debugPrint('Invoice and associated products added successfully.');
       return updatedInvoice; // Return the updated invoice
     } catch (e) {
-      print('Error adding invoice: $e');
+      debugPrint('Error adding invoice: $e');
       throw Exception('Failed to add invoice: $e');
     }
   }
@@ -292,7 +288,7 @@ class InvoiceProvider extends ChangeNotifier {
       recentInvoices = invoices;
       notifyListeners();
     } catch (e) {
-      print('Error fetching invoices: $e');
+      debugPrint('Error fetching invoices: $e');
       recentInvoices = [];
       notifyListeners();
     }
@@ -347,7 +343,6 @@ class InvoiceProvider extends ChangeNotifier {
         products: productList,
         cgstPercentage: invoice.gst,
         sgstPercentage: invoice.gst,
-        context: context,
         isShare: isShare,
         grossWtDp: grossWtDp,
         stoneWtDp: stoneWtDp,
@@ -359,9 +354,11 @@ class InvoiceProvider extends ChangeNotifier {
       );
 
       // Move the success message here
-      print('PDF generated successfully for Invoice #${invoice.invoiceId}');
+      debugPrint(
+        'PDF generated successfully for Invoice #${invoice.invoiceId}',
+      );
     } catch (e) {
-      print('Error generating PDF: $e');
+      debugPrint('Error generating PDF: $e');
       throw Exception('Failed to generate PDF: $e');
     } finally {
       isPDFloading = false;

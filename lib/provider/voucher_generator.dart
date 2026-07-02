@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:invoice_maker/model/voucher_item.dart';
 import 'package:invoice_maker/utils/first_word.dart';
@@ -302,7 +303,7 @@ class VoucherGenerator {
         OpenFilex.open(filePath);
       }
     } catch (e) {
-      print("VoucherGenerator error: $e");
+      debugPrint("VoucherGenerator error: $e");
     }
   }
 }

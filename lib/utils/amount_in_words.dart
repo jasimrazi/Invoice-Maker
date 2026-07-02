@@ -8,9 +8,9 @@ String convertAmountToWords(double amount) {
   String paiseWords = paise > 0 ? _convertNumberToWords(paise) : "";
 
   if (paise > 0) {
-    return "${rupeesWords} Rupees And ${paiseWords} Paise Only";
+    return "$rupeesWords Rupees And $paiseWords Paise Only";
   } else {
-    return "${rupeesWords} Rupees Only";
+    return "$rupeesWords Rupees Only";
   }
 }
 

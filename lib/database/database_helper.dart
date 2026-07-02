@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -18,7 +20,7 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'invoice_maker.db');
-    print('Database path: $path'); // Debugging log
+    developer.log('Database path: $path');
 
     return await openDatabase(
       path,
@@ -26,7 +28,7 @@ class DatabaseHelper {
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
       onOpen: (db) {
-        print('Database opened'); // Debugging log
+        developer.log('Database opened');
       },
     );
   }
@@ -35,7 +37,7 @@ class DatabaseHelper {
     if (_database != null) {
       await _database!.close();
       _database = null; // Reset the database instance
-      print('Database connection closed'); // Debugging log
+      developer.log('Database connection closed');
     }
   }
 

@@ -35,7 +35,7 @@ class VoucherItemTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
-              color: AppColors.borderColor.withOpacity(0.5),
+              color: AppColors.borderColor.withValues(alpha: 0.5),
               blurRadius: 6.0,
               spreadRadius: 1.0,
               offset: const Offset(2, 2),

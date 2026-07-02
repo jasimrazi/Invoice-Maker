@@ -15,8 +15,6 @@ String truncateTextWithEllipsis({
 
   // Estimate the width of the ellipsis (...)
   const String ellipsis = "...";
-  double ellipsisWidth = font.measureString(ellipsis).width;
-
   // Binary search-like approach to find the truncation point
   String truncatedText = text;
   while (font.measureString(truncatedText + ellipsis).width > maxWidth &&

@@ -277,7 +277,6 @@ class _AddProductPageState extends State<AddProductPage> {
                           : null,
                 );
 
-                print('Product successfully added!');
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Product added successfully!')),
                 );

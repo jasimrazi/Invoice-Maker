@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:sqflite/sqflite.dart';
 import 'database_helper.dart'; // Ensure this imports your DatabaseHelper class
 
@@ -10,7 +12,7 @@ class DatabaseDebugger {
     List<Map<String, dynamic>> tables = await db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='table'",
     );
-    print("Tables in database: $tables");
+    developer.log("Tables in database: $tables");
   }
 
   // Get schema (columns) of a specific table
@@ -19,20 +21,20 @@ class DatabaseDebugger {
     List<Map<String, dynamic>> schema = await db.rawQuery(
       "PRAGMA table_info($tableName)",
     );
-    print("Schema of $tableName: $schema");
+    developer.log("Schema of $tableName: $schema");
   }
 
   // Fetch all rows from a given table
   Future<void> getAllRows(String tableName) async {
     final db = await _dbHelper.database;
     List<Map<String, dynamic>> rows = await db.query(tableName);
-    print("Data in $tableName: $rows");
+    developer.log("Data in $tableName: $rows");
   }
 
   // Print the database path (useful for manual inspection)
   Future<void> getDatabasePath() async {
     final dbPath = await getDatabasesPath();
-    print("Database path: $dbPath");
+    developer.log("Database path: $dbPath");
   }
 
   Future<void> debugInvoices() async {
@@ -46,10 +48,10 @@ class DatabaseDebugger {
 
       // Print each row
       for (final row in rows) {
-        print('Invoice Row: $row');
+        developer.log('Invoice Row: $row');
       }
     } catch (e) {
-      print('❌ Error fetching invoices for debugging: $e');
+      developer.log('Error fetching invoices for debugging: $e');
     }
   }
 }

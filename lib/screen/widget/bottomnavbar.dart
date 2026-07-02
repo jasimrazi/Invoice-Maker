@@ -7,11 +7,11 @@ class CustomBottomNavBar extends StatelessWidget {
   final VoidCallback onTap;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     required this.label,
     this.isLoading = false,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

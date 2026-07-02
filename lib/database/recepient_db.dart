@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:invoice_maker/database/database_helper.dart';
 import 'package:invoice_maker/model/recipient.dart';
 
@@ -12,7 +14,7 @@ class RecipientDB {
   Future<List<Recipient>> getRecipients() async {
     final db = await _dbHelper.database;
     final List<Map<String, dynamic>> maps = await db.query('recipients');
-    print('Fetched recipients from DB: $maps'); // Debug log
+    developer.log('Fetched recipients from DB: $maps');
     return maps.map((map) => Recipient.fromMap(map)).toList();
   }
 

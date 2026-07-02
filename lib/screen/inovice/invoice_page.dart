@@ -174,7 +174,7 @@ class _InvoicePageState extends State<InvoicePage> {
                             provider.removeProduct(product);
                           },
                         );
-                      }).toList(),
+                      }),
                       const SizedBox(height: 16.0),
                       Container(
                         padding: const EdgeInsets.all(12.0),
@@ -278,6 +278,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   gst: gst,
                   totalTaxableAmount: totalTaxableAmount,
                 );
+                if (!context.mounted) return;
 
                 final updatedInvoice = widget.invoice!.copyWith(
                   date: date,
@@ -292,6 +293,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   invoice: updatedInvoice,
                   context: context,
                 );
+                if (!context.mounted) return;
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -301,7 +303,7 @@ class _InvoicePageState extends State<InvoicePage> {
 
                 Navigator.pop(context);
               } else {
-                print("Products before creating invoice: $products");
+                debugPrint("Products before creating invoice: $products");
 
                 final invoice = Invoice(
                   invoiceId: 0,
@@ -313,7 +315,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   totalTaxableAmount: totalTaxableAmount,
                 );
 
-                print("Invoice created: ${invoice.products}");
+                debugPrint("Invoice created: ${invoice.products}");
 
                 final updatedInvoice = await invoiceProvider.addInvoice(
                   date: date,
@@ -323,15 +325,19 @@ class _InvoicePageState extends State<InvoicePage> {
                   gst: gst,
                   totalTaxableAmount: totalTaxableAmount,
                 );
+                if (!context.mounted) return;
 
-                print("Products after addInvoice: ${updatedInvoice.products}");
+                debugPrint(
+                  "Products after addInvoice: ${updatedInvoice.products}",
+                );
 
-                print("Before PDF Generation: ${updatedInvoice.products}");
+                debugPrint("Before PDF Generation: ${updatedInvoice.products}");
                 await invoiceProvider.generateInvoicePDF(
                   invoice: updatedInvoice,
                   context: context,
                 );
-                print("After PDF Generation: ${updatedInvoice.products}");
+                if (!context.mounted) return;
+                debugPrint("After PDF Generation: ${updatedInvoice.products}");
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -341,7 +347,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   ),
                 );
 
-                print(
+                debugPrint(
                   "Before Clearing Product List: ${invoiceProvider.addedProducts}",
                 );
 
@@ -352,12 +358,13 @@ class _InvoicePageState extends State<InvoicePage> {
                 ).format(DateTime.now());
                 gstController.text = '2.50';
 
-                print(
+                debugPrint(
                   "After Clearing Product List: ${invoiceProvider.addedProducts}",
                 );
               }
             } catch (e) {
-              print("Exception: ${e.toString()}");
+              debugPrint("Exception: ${e.toString()}");
+              if (!context.mounted) return;
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));

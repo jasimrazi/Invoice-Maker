@@ -12,7 +12,7 @@ import 'package:invoice_maker/screen/widget/bottomnavbar.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -151,6 +151,7 @@ class _HomePageState extends State<HomePage>
                                                   isShare: false,
                                                 );
                                               } catch (e) {
+                                                if (!context.mounted) return;
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -178,6 +179,7 @@ class _HomePageState extends State<HomePage>
                                                   InvoicePage(invoice: invoice),
                                         ),
                                       ).then((_) {
+                                        if (!context.mounted) return;
                                         Provider.of<InvoiceProvider>(
                                           context,
                                           listen: false,
@@ -199,6 +201,7 @@ class _HomePageState extends State<HomePage>
                                           isShare: true,
                                         );
                                       } catch (e) {
+                                        if (!context.mounted) return;
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(
@@ -309,6 +312,7 @@ class _HomePageState extends State<HomePage>
                                                   isShare: false,
                                                 );
                                               } catch (e) {
+                                                if (!context.mounted) return;
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -336,6 +340,7 @@ class _HomePageState extends State<HomePage>
                                                   VoucherPage(voucher: voucher),
                                         ),
                                       ).then((_) {
+                                        if (!context.mounted) return;
                                         Provider.of<VoucherProvider>(
                                           context,
                                           listen: false,
@@ -357,6 +362,7 @@ class _HomePageState extends State<HomePage>
                                           isShare: true,
                                         );
                                       } catch (e) {
+                                        if (!context.mounted) return;
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(

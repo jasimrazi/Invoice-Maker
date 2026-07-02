@@ -25,6 +25,8 @@ class ProductTile extends StatelessWidget {
     final rateDp = settings.invRateDp;
     final stoneChargeDp = settings.invStoneChargeDp;
     final taxableDp = settings.invTaxableDp;
+    final stoneWeight = product.stoneWeight;
+    final stoneCharge = product.stoneCharge;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.0),
@@ -36,7 +38,7 @@ class ProductTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
-              color: AppColors.borderColor.withOpacity(0.5),
+              color: AppColors.borderColor.withValues(alpha: 0.5),
               blurRadius: 6.0,
               spreadRadius: 1.0,
               offset: const Offset(2, 2),
@@ -82,16 +84,16 @@ class ProductTile extends StatelessWidget {
               children: [
                 _infoText(
                   'Gross Wt',
-                  '${product.grossWeight?.toStringAsFixed(grossWtDp) ?? 'N/A'} g',
+                  '${product.grossWeight.toStringAsFixed(grossWtDp)} g',
                 ),
-                if (product.stoneWeight != null && product.stoneWeight! > 0)
+                if (stoneWeight != null && stoneWeight > 0)
                   _infoText(
                     'Stone Wt',
-                    '${product.stoneWeight?.toStringAsFixed(stoneWtDp) ?? 'N/A'} g',
+                    '${stoneWeight.toStringAsFixed(stoneWtDp)} g',
                   ),
                 _infoText(
                   'Net Wt',
-                  '${product.netWeight?.toStringAsFixed(netWtDp) ?? 'N/A'} g',
+                  '${product.netWeight.toStringAsFixed(netWtDp)} g',
                 ),
               ],
             ),
@@ -103,12 +105,12 @@ class ProductTile extends StatelessWidget {
               children: [
                 _infoText(
                   'Rate/Gram',
-                  '₹${product.ratePerGram?.toStringAsFixed(rateDp) ?? 'N/A'}',
+                  '₹${product.ratePerGram.toStringAsFixed(rateDp)}',
                 ),
-                if (product.stoneCharge != null && product.stoneCharge! > 0)
+                if (stoneCharge != null && stoneCharge > 0)
                   _infoText(
                     'Stone Charge',
-                    '₹${product.stoneCharge?.toStringAsFixed(stoneChargeDp) ?? 'N/A'}',
+                    '₹${stoneCharge.toStringAsFixed(stoneChargeDp)}',
                   ),
               ],
             ),

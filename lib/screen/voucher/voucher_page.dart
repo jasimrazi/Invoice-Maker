@@ -249,6 +249,7 @@ class _VoucherPageState extends State<VoucherPage> {
                   date: date,
                   items: items,
                 );
+                if (!context.mounted) return;
                 final updated = widget.voucher!.copyWith(
                   name: nameController.text,
                   gstin: gstinController.text,
@@ -260,6 +261,7 @@ class _VoucherPageState extends State<VoucherPage> {
                   ),
                 );
                 await vp.generateVoucherPDF(voucher: updated, context: context);
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Voucher updated successfully!'),
@@ -273,7 +275,9 @@ class _VoucherPageState extends State<VoucherPage> {
                   date: date,
                   items: items,
                 );
+                if (!context.mounted) return;
                 await vp.generateVoucherPDF(voucher: saved, context: context);
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
@@ -288,6 +292,7 @@ class _VoucherPageState extends State<VoucherPage> {
                 ).format(DateTime.now());
               }
             } catch (e) {
+              if (!context.mounted) return;
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));

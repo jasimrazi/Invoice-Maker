@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:invoice_maker/model/recipient.dart';
 import 'package:invoice_maker/provider/invoice_provider.dart';
 import 'package:invoice_maker/provider/recepient_provider.dart';
 import 'package:invoice_maker/screen/add_recepient_page.dart';
@@ -157,7 +156,7 @@ class _SearchRecipientState extends State<SearchRecipient> {
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 6.0,
                   offset: const Offset(0, 3),
                 ),
